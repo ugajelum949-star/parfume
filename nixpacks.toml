@@ -1,0 +1,11 @@
+# Node + sharp native deps
+[phases.setup]
+nixPkgs = ["nodejs_20", "python311", "gcc"]
+
+[start]
+cmd = "node .next/standalone/server.js"
+
+[env]
+PORT = "3000"
+HOSTNAME = "0.0.0.0"
+NODE_ENV = "production"
