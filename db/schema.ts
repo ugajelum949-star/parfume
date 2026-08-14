@@ -26,7 +26,7 @@ export const paymentMethods = pgTable("payment_methods", {
 export const products = pgTable("products", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
-  category: text("category").notNull(), // scent family: Oriental, Floral, Woody, etc.
+  category: text("category").notNull(), // scent family: Fresh, Floral, Woody, Amber
   brand: text("brand").default("-").notNull(),
   gender: text("gender").default("Unisex").notNull(), // Men, Women, Unisex
   price: real("price").notNull(),

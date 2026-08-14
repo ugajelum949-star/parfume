@@ -39,7 +39,7 @@ export default function ProductsPage() {
   // Form state
   const [name, setName] = useState('')
   const [brand, setBrand] = useState('Other')
-  const [category, setCategory] = useState('Oriental')
+  const [category, setCategory] = useState(SCENT_FAMILIES[0])
   const [gender, setGender] = useState('Unisex')
   const [, setPrice] = useState('')
   const [description, setDescription] = useState('')
@@ -205,7 +205,7 @@ export default function ProductsPage() {
   }
 
   function resetForm() {
-    setName(''); setBrand('Other'); setCategory('Oriental'); setGender('Unisex')
+    setName(''); setBrand('Other'); setCategory(SCENT_FAMILIES[0]); setGender('Unisex')
     setPrice(''); setDescription(''); setSizes('10ml,30ml,50ml,100ml')
     setStock('20'); setIsBestSeller(false); setImageUrl('')
     setEditingId(null)
