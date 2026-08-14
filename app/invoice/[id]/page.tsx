@@ -148,9 +148,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         {/* Client: upload + confirm */}
         <InvoiceClient
           orderId={order.id}
-          customerName={order.customerName}
           customerPhone={order.customerPhone}
-          total={order.total}
           confirmButtonType={s.confirmButtonType}
           giftWrap={order.giftWrap}
           giftWrapNote={order.giftWrapNote}
