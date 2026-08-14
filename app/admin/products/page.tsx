@@ -39,7 +39,7 @@ export default function ProductsPage() {
   // Form state
   const [name, setName] = useState('')
   const [brand, setBrand] = useState('Other')
-  const [category, setCategory] = useState(SCENT_FAMILIES[0])
+  const [category, setCategory] = useState<string>(SCENT_FAMILIES[0])
   const [gender, setGender] = useState('Unisex')
   const [, setPrice] = useState('')
   const [description, setDescription] = useState('')
