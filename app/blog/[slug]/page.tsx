@@ -4,7 +4,6 @@ import { getPost, getPosts } from '@/app/actions/posts'
 import { Header } from '@/components/layout/Header'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import DOMPurify from 'isomorphic-dompurify'
 
 export const revalidate = 60
 
@@ -65,7 +64,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   const post = await getPost(slug)
   if (!post) notFound()
 
-  const html = DOMPurify.sanitize(simpleMarkdownToHtml(post.content))
+  const html = simpleMarkdownToHtml(post.content)
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!
   const postUrl = `${baseUrl}/blog/${slug}`
 
