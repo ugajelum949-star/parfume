@@ -5,6 +5,8 @@ import { Header } from '@/components/layout/Header'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const revalidate = 60
 
 const categoryColors: Record<string, string> = {

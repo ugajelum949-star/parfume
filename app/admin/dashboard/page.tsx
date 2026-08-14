@@ -5,6 +5,8 @@ import { orders, products, users } from '@/db/schema'
 import { count, sql } from 'drizzle-orm'
 import { formatCurrency } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
   const [[orderCount], [revenue], [productCount], [userCount]] = await Promise.all([
     db.select({ value: count() }).from(orders),

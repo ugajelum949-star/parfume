@@ -15,6 +15,8 @@ import { GenderSplit } from '@/components/home/GenderSplit'
 import { getActiveWars, checkExpiredWars, getScheduledWars } from '@/app/actions/wars'
 import { getPosts } from '@/app/actions/posts'
 
+export const dynamic = 'force-dynamic'
+
 export const revalidate = 60
 
 export default async function Home() {

@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useActionState } from 'react'
 import { login } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'

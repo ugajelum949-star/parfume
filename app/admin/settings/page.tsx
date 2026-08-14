@@ -2,6 +2,8 @@ import { db } from '@/lib/db'
 import { settings } from '@/db/schema'
 import { SettingsForm } from './settings-form'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminSettingsPage() {
   const rows = await db.select().from(settings)
   const map: Record<string, string> = {}

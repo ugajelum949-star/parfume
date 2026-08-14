@@ -8,6 +8,8 @@ import { ProductTestimonials } from '@/components/product/ProductTestimonials'
 import { parseAllSizePrices } from '@/lib/price'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const revalidate = 300
 
 type Props = { params: Promise<{ id: string }> }

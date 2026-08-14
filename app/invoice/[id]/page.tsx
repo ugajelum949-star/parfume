@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle, CreditCard, Package, Truck, ShoppingCart } from 'lucide-react'
 import InvoiceClient from './InvoiceClient'
 
+export const dynamic = 'force-dynamic'
+
 const STEPS = [
   { key: 'CREATED', label: 'Order Dibuat', icon: ShoppingCart },
   { key: 'PAYMENT', label: 'Pembayaran', icon: CreditCard },
