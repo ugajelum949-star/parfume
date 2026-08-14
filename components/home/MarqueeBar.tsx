@@ -1,8 +1,7 @@
 export function MarqueeBar() {
   const items = [
-    'GRATIS ONGKIR untuk pembelian 2+ item',
+    'GRATIS ONGKIR untuk pembelian di atas Rp300.000',
     'GARANSI 100% ORIGINAL',
-    'BAYAR DI TEMPAT tersedia',
     'FREE VIAL untuk setiap pembelian',
   ]
   const text = items.join(' · ')

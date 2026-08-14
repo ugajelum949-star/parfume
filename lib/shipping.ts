@@ -100,6 +100,7 @@ export interface OrderInput {
   shippingZone: ZoneId;
   shippingService: string;
   isTransfer?: boolean;
+  freeShippingThreshold?: number;
 }
 
 export interface OrderResult {
@@ -110,32 +111,24 @@ export interface OrderResult {
   total: number;
   promo: {
     freeShipping: boolean;
-    bonusJersey: boolean;
     activePromos: string[];
   };
 }
 
 const CUSTOMIZATION_FEE = 25000;
+const DEFAULT_FREE_SHIPPING_THRESHOLD = 300000;
 
 export function calculateOrderTotal(input: OrderInput): OrderResult {
   const { subtotal, totalQty, shippingZone, shippingService, isTransfer } = input;
+  const freeShippingThreshold = input.freeShippingThreshold ?? DEFAULT_FREE_SHIPPING_THRESHOLD;
   const services = getAvailableServices(shippingZone);
   const selected = services.find(s => s.id === shippingService);
   const baseShipping = selected?.price ?? 0;
 
   const activePromos: string[] = [];
   let freeShipping = false;
-  let bonusJersey = false;
 
-  if (totalQty >= 5) {
-    activePromos.push('Mega Bundle: Gratis Ongkir + Bonus Jersey + Extra Gift');
-    freeShipping = true;
-    bonusJersey = true;
-  } else if (totalQty >= 3) {
-    activePromos.push('Bundle: Gratis Ongkir + Bonus Jersey');
-    freeShipping = true;
-    bonusJersey = true;
-  } else if (totalQty >= 2) {
+  if (subtotal >= freeShippingThreshold) {
     activePromos.push('Gratis Ongkir');
     freeShipping = true;
   }
@@ -153,7 +146,6 @@ export function calculateOrderTotal(input: OrderInput): OrderResult {
     total: Math.max(0, total),
     promo: {
       freeShipping,
-      bonusJersey,
       activePromos,
     },
   };

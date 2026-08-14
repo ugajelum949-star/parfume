@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
-import { orders, orderItems, paymentMethods, products, warItems } from '@/db/schema'
+import { orders, orderItems, paymentMethods, products, warItems, settings } from '@/db/schema'
 import { eq, desc, sql } from 'drizzle-orm'
 import { calculateOrderTotal, type ZoneId } from '@/lib/shipping'
 import { verifyAdmin } from './auth'
@@ -60,12 +60,16 @@ export async function createOrder(data: {
 
     const [paymentMethod] = await db.select().from(paymentMethods).where(eq(paymentMethods.id, data.paymentMethodId))
 
+    const [thresholdSetting] = await db.select().from(settings).where(eq(settings.key, 'shipping_free_threshold')).limit(1)
+    const freeShippingThreshold = Number(thresholdSetting?.value) || undefined
+
     const orderCalc = calculateOrderTotal({
       subtotal,
       totalQty,
       shippingZone: data.shippingZone as ZoneId,
       shippingService: data.shippingService,
       isTransfer: paymentMethod?.type === 'transfer',
+      freeShippingThreshold,
     })
 
     // 4. Create order with server-verified total

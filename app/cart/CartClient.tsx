@@ -103,6 +103,7 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
     shippingZone,
     shippingService,
     isTransfer: selectedMethod?.type === 'transfer',
+    freeShippingThreshold: Number(initialSettings.shipping_free_threshold) || undefined,
   })
 
   const finalTotal = orderCalc.total + giftWrapCost

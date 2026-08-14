@@ -117,7 +117,7 @@ export default async function Home() {
       {/* Trust strip */}
       <section className="py-8 md:py-10 border-t border-border">
         <div className="max-w-4xl mx-auto px-4 flex flex-wrap justify-center gap-3 md:gap-4">
-          {['100% Original', 'Gratis Ongkir', 'Bayar di Tempat', 'Return 7 Hari'].map(item => (
+          {['100% Original', 'Gratis Ongkir', 'Free Vial', 'Return 7 Hari'].map(item => (
             <span key={item} className="text-xs uppercase tracking-wider text-muted-foreground px-4 py-2 rounded-full border border-border">
               {item}
             </span>

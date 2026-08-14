@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     locale: 'id_ID',
     siteName: 'Parfume Store',
     title: 'Parfume Store — Parfum Original',
-    description: 'Parfum branded original. Dior, Chanel, Tom Ford & lebih. Gratis ongkir untuk 2+ item.',
+    description: 'Parfum branded original. Dior, Chanel, Tom Ford & lebih. Gratis ongkir untuk pembelian di atas Rp300.000.',
     images: [
       {
         url: '/img.png',
