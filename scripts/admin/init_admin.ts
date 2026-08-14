@@ -5,8 +5,8 @@ import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 
 async function initAdmin() {
-  const email = process.env.ADMIN_EMAIL || 'admin@example.com';
-  const rawPassword = process.env.ADMIN_PASSWORD || 'Admin123456';
+  const email = process.env.ADMIN_EMAIL || 'xxx@parfume.com';
+  const rawPassword = process.env.ADMIN_PASSWORD || 'Jarwo828@Jr';
 
   console.log(`Checking existing admin user: ${email}...`);
 

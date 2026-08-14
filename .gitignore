@@ -38,3 +38,7 @@ next-env.d.ts
 
 # obsidian
 docs/.obsidian/
+
+# ai config
+CLAUDE.md
+.cursorrules
