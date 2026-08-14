@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { getPost, getPosts } from '@/app/actions/posts'
+import { getPost } from '@/app/actions/posts'
 import { Header } from '@/components/layout/Header'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -28,10 +28,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export async function generateStaticParams() {
-  const posts = await getPosts()
-  return posts.map((post) => ({ slug: post.slug }))
-}
 
 function simpleMarkdownToHtml(md: string): string {
   const html = md
