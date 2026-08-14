@@ -1,6 +1,9 @@
 # Node + sharp native deps
 [phases.setup]
-nixPkgs = ["nodejs_20", "python311", "gcc"]
+nixPkgs = ["nodejs_22", "python311", "gcc"]
+
+[phases.install]
+cmds = ["npm ci --prefer-offline"]
 
 [start]
 cmd = "node .next/standalone/server.js"
