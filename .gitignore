@@ -42,3 +42,11 @@ docs/.obsidian/
 # ai config
 CLAUDE.md
 .cursorrules
+
+# deployment files
+docs/
+scripts/
+tests/
+.env.example
+.obsidianignore
+.obsidian/
