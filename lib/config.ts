@@ -1,3 +1,8 @@
+// Base URL helper — prevents "undefined" in canonical/OG URLs
+export function getBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_BASE_URL || ''
+}
+
 // Scent families
 export const SCENT_FAMILIES = [
   'Fresh',

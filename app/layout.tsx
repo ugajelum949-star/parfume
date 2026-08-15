@@ -7,6 +7,7 @@ import { StoreProvider } from "@/components/providers/StoreProvider";
 import { ProtectionProvider } from "@/components/providers/ProtectionProvider";
 import { ClientOverlays } from "@/components/shared/ClientOverlays";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
+import { FloatingChat } from "@/components/shared/FloatingChat";
 import "./globals.css";
 
 const inter = Inter({
@@ -102,6 +103,7 @@ export default function RootLayout({
             <BottomNav />
             <ClientOverlays />
             <ScrollToTop />
+            <FloatingChat />
           </div>
           <Toaster position="top-center" />
         </StoreProvider>

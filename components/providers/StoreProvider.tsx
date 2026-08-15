@@ -10,6 +10,8 @@ interface StoreSettings {
   supportEmail: string
   whatsapp: string
   telegramUsername: string
+  floatingButtonEnabled: boolean
+  floatingButtonType: string
 }
 
 const StoreContext = createContext<StoreSettings>({
@@ -19,6 +21,8 @@ const StoreContext = createContext<StoreSettings>({
   supportEmail: '',
   whatsapp: '',
   telegramUsername: '',
+  floatingButtonEnabled: false,
+  floatingButtonType: 'whatsapp',
 })
 
 export function useStoreSettings() {
@@ -33,10 +37,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     supportEmail: '',
     whatsapp: '',
     telegramUsername: '',
+    floatingButtonEnabled: false,
+    floatingButtonType: 'whatsapp',
   })
 
   useEffect(() => {
-    getSettings(['store_name', 'store_slogan', 'store_logo', 'support_email', 'whatsapp', 'telegramUsername']).then((data) => {
+    getSettings(['store_name', 'store_slogan', 'store_logo', 'support_email', 'whatsapp', 'telegramUsername', 'floatingButtonEnabled', 'floatingButtonType']).then((data) => {
       setSettings({
         storeName: data.store_name || 'My Store',
         storeSlogan: data.store_slogan || '',
@@ -44,6 +50,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         supportEmail: data.support_email || '',
         whatsapp: data.whatsapp || '',
         telegramUsername: data.telegramUsername || '',
+        floatingButtonEnabled: data.floatingButtonEnabled === 'true',
+        floatingButtonType: data.floatingButtonType || 'whatsapp',
       })
     })
   }, [])

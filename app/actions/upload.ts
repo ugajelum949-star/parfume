@@ -49,8 +49,8 @@ export async function uploadImage(base64Data: string, folder: string) {
       throw new Error('File size exceeds 20MB limit')
     }
 
-    // Apply watermark to product images
-    const watermarked = await applyWatermark(base64Data)
+    // Apply watermark to product images only (skip for logos, banners, etc.)
+    const watermarked = folder === 'logos' ? base64Data : await applyWatermark(base64Data)
     const publicUrl = await uploadToS3(watermarked, folder)
 
     return { success: true, url: publicUrl }

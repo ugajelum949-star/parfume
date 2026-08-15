@@ -81,14 +81,16 @@ export function getShippingCost(zoneId: ZoneId): number {
   return SHIPPING_ZONES.find(z => z.id === zoneId)?.basePrice ?? 0;
 }
 
-export function getAvailableServices(zoneId: ZoneId): ShippingService[] {
+export function getAvailableServices(zoneId: ZoneId, settings?: { instantPrice?: number; nextdaySurcharge?: number }): ShippingService[] {
   const base = getShippingCost(zoneId);
   const isCore = zoneId === 'jabodetabek' || zoneId === 'jawa';
+  const instantPrice = settings?.instantPrice ?? INSTANT_PRICE;
+  const nextdaySurcharge = settings?.nextdaySurcharge ?? NEXT_DAY_SURCHARGE;
 
   const services: ShippingService[] = [
     { id: 'reguler', label: 'Reguler', available: true, price: base },
-    { id: 'instant', label: 'Instant', available: isCore, price: INSTANT_PRICE },
-    { id: 'next_day', label: 'Next Day', available: !isCore, price: base + NEXT_DAY_SURCHARGE },
+    { id: 'instant', label: 'Instant', available: isCore, price: instantPrice },
+    { id: 'next_day', label: 'Next Day', available: !isCore, price: base + nextdaySurcharge },
   ];
 
   return services.filter(s => s.available);
@@ -101,6 +103,10 @@ export interface OrderInput {
   shippingService: string;
   isTransfer?: boolean;
   freeShippingThreshold?: number;
+  customizationFee?: number;
+  transferDiscount?: number;
+  instantPrice?: number;
+  nextdaySurcharge?: number;
 }
 
 export interface OrderResult {
@@ -108,6 +114,7 @@ export interface OrderResult {
   customization: number;
   shipping: number;
   shippingIncluded: boolean;
+  transferDiscount: number;
   total: number;
   promo: {
     freeShipping: boolean;
@@ -115,13 +122,16 @@ export interface OrderResult {
   };
 }
 
-const CUSTOMIZATION_FEE = 25000;
+const DEFAULT_CUSTOMIZATION_FEE = 25000;
+const DEFAULT_TRANSFER_DISCOUNT = 50000;
 const DEFAULT_FREE_SHIPPING_THRESHOLD = 300000;
 
 export function calculateOrderTotal(input: OrderInput): OrderResult {
   const { subtotal, totalQty, shippingZone, shippingService, isTransfer } = input;
   const freeShippingThreshold = input.freeShippingThreshold ?? DEFAULT_FREE_SHIPPING_THRESHOLD;
-  const services = getAvailableServices(shippingZone);
+  const customizationFee = input.customizationFee ?? DEFAULT_CUSTOMIZATION_FEE;
+  const transferDiscountAmount = input.transferDiscount ?? DEFAULT_TRANSFER_DISCOUNT;
+  const services = getAvailableServices(shippingZone, { instantPrice: input.instantPrice, nextdaySurcharge: input.nextdaySurcharge });
   const selected = services.find(s => s.id === shippingService);
   const baseShipping = selected?.price ?? 0;
 
@@ -133,9 +143,9 @@ export function calculateOrderTotal(input: OrderInput): OrderResult {
     freeShipping = true;
   }
 
-  const customization = totalQty > 0 ? CUSTOMIZATION_FEE * totalQty : 0;
+  const customization = totalQty > 0 ? customizationFee * totalQty : 0;
   const shipping = freeShipping ? 0 : baseShipping;
-  const transferDiscount = isTransfer ? 50000 : 0;
+  const transferDiscount = isTransfer ? transferDiscountAmount : 0;
   const total = subtotal + customization + shipping - transferDiscount;
 
   return {
@@ -143,6 +153,7 @@ export function calculateOrderTotal(input: OrderInput): OrderResult {
     customization,
     shipping,
     shippingIncluded: !freeShipping,
+    transferDiscount,
     total: Math.max(0, total),
     promo: {
       freeShipping,

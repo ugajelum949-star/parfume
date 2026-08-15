@@ -369,7 +369,7 @@ export default function ProductsPage() {
                     </div>
                     <p className="text-xs text-muted-foreground">{item.brand} · {item.category} · {item.gender}</p>
                   </div>
-                  <p className="text-gold font-bold text-sm shrink-0">
+                  <p className="hidden sm:block text-gold font-bold text-sm shrink-0">
                     {(() => {
                       try {
                         const sd = JSON.parse(item.stockData || '{}')
@@ -379,7 +379,7 @@ export default function ProductsPage() {
                       return formatCurrency(item.price)
                     })()}
                   </p>
-                  <p className="text-xs text-muted-foreground shrink-0 w-12 text-right">{item.stock} stok</p>
+                  <p className="hidden md:block text-xs text-muted-foreground shrink-0 w-12 text-right">{item.stock} stok</p>
                   <button onClick={() => handleEdit(item)} className="p-2 text-gold hover:bg-gold/10 rounded-lg transition-colors shrink-0">
                     <Pencil className="w-4 h-4" />
                   </button>

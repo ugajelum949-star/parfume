@@ -24,10 +24,10 @@ export function PopularSection({ products }: { products: Product[] }) {
   return (
     <section id="products" className="py-12 md:py-20 max-w-6xl mx-auto px-4 md:px-6">
       <div className="flex items-end justify-between mb-8">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 md:gap-8">
           <button
             onClick={() => setTab('popular')}
-            className={`text-2xl md:text-3xl font-semibold transition-colors ${
+            className={`text-lg md:text-3xl font-semibold transition-colors ${
               tab === 'popular' ? 'text-foreground' : 'text-muted-foreground'
             }`}
           >
@@ -35,7 +35,7 @@ export function PopularSection({ products }: { products: Product[] }) {
           </button>
           <button
             onClick={() => setTab('sale')}
-            className={`text-2xl md:text-3xl font-semibold transition-colors ${
+            className={`text-lg md:text-3xl font-semibold transition-colors ${
               tab === 'sale' ? 'text-foreground' : 'text-muted-foreground'
             }`}
           >
@@ -44,7 +44,7 @@ export function PopularSection({ products }: { products: Product[] }) {
         </div>
         <Link
           href="/products"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors border-b border-muted-foreground hover:border-foreground pb-0.5"
+          className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors border-b border-muted-foreground hover:border-foreground pb-0.5"
         >
           Shop All Products
         </Link>

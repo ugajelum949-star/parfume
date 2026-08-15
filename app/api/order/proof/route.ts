@@ -66,7 +66,9 @@ export async function POST(req: NextRequest) {
     if (s.telegramBotToken && s.telegramChatId) {
       const buffer = Buffer.from(await file.arrayBuffer())
       const caption = `Bukti Pembayaran\nOrder: ${orderId}\nCustomer: ${existingOrder.customerName || '-'}\nTotal: Rp ${existingOrder.total.toLocaleString('id-ID')}`
-      sendTelegramPhoto(s.telegramBotToken, s.telegramChatId, buffer, caption)
+      sendTelegramPhoto(s.telegramBotToken, s.telegramChatId, buffer, caption).catch(err => {
+        console.error('[proof] Telegram photo failed:', err)
+      })
     }
 
     return NextResponse.json({ success: true })

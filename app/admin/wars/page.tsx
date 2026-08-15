@@ -237,16 +237,16 @@ export default function AdminWarsPage() {
           return (
             <Card key={w.id} className="bg-card border-border">
               <CardContent className="flex items-center gap-4 p-4">
-                <div className="w-20 h-12 rounded-lg overflow-hidden bg-gold/5 shrink-0">
+                <div className="w-16 md:w-20 h-12 rounded-lg overflow-hidden bg-gold/5 shrink-0">
                   {w.image ? <img src={w.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Swords className="w-4 h-4 text-gold/40" /></div>}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <p className="font-semibold text-sm">{w.name}</p>
                     <span className={`text-xs font-bold ${status.color}`}>{status.label}</span>
                     {w.converted && <span className="text-[10px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full">→ Products</span>}
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="hidden sm:block text-xs text-muted-foreground">
                     {formatDate(w.startTime)} — {formatDate(w.endTime)}
                   </p>
                 </div>

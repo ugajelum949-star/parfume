@@ -8,16 +8,20 @@ import toast from 'react-hot-toast'
 
 interface InvoiceClientProps {
   orderId: string
+  orderStatus?: string
   customerPhone?: string | null
   confirmButtonType?: string
+  storeTelegramUsername?: string
   giftWrap?: boolean | null
   giftWrapNote?: string | null
 }
 
 export default function InvoiceClient({
   orderId,
+  orderStatus,
   customerPhone,
-  confirmButtonType = 'whatsapp',
+  confirmButtonType = 'both',
+  storeTelegramUsername,
   giftWrap,
   giftWrapNote,
 }: InvoiceClientProps) {
@@ -58,7 +62,7 @@ export default function InvoiceClient({
 
   const phone = customerPhone?.replace(/\D/g, '') || ''
   const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(`Konfirmasi pembayaran order ${orderId}`)}`
-  const tgLink = `https://t.me/+${phone}`
+  const tgLink = storeTelegramUsername ? `https://t.me/${storeTelegramUsername.replace(/^@/, '')}` : ''
 
   return (
     <div className="space-y-4">
@@ -129,13 +133,30 @@ export default function InvoiceClient({
             Konfirmasi via WhatsApp
           </Button>
         </a>
-      ) : (
+      ) : confirmButtonType === 'telegram' ? (
         <a href={tgLink} target="_blank" rel="noopener noreferrer" className="block">
           <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
             <Send className="h-4 w-4 mr-2" />
             Konfirmasi via Telegram
           </Button>
         </a>
+      ) : (
+        <div className="space-y-3">
+          <a href={waLink} target="_blank" rel="noopener noreferrer" className="block">
+            <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Konfirmasi via WhatsApp
+            </Button>
+          </a>
+          {tgLink && (
+            <a href={tgLink} target="_blank" rel="noopener noreferrer" className="block">
+              <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+                <Send className="h-4 w-4 mr-2" />
+                Konfirmasi via Telegram
+              </Button>
+            </a>
+          )}
+        </div>
       )}
     </div>
   )

@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db'
 import { wars, warItems, products } from '@/db/schema'
-import { eq, and, lte, gt, desc } from 'drizzle-orm'
+import { eq, and, lte, gt, desc, sql } from 'drizzle-orm'
 import { verifyAdmin } from './auth'
 import { revalidatePath } from 'next/cache'
 
@@ -15,9 +15,9 @@ export async function getWars() {
 export async function getActiveWars() {
   const now = new Date()
   const active = await db.select().from(wars).where(
-    and(eq(wars.active, true), lte(wars.startTime, now))
+    and(eq(wars.active, true), lte(wars.startTime, now), gt(wars.endTime, now))
   )
-  return active.filter(w => new Date(w.endTime) >= now)
+  return active
 }
 
 /** Get scheduled wars (startTime > now) — for "Coming Soon" */
@@ -47,6 +47,10 @@ export async function createWar(data: {
 }) {
   try {
     await verifyAdmin()
+
+    if (new Date(data.endTime) <= new Date(data.startTime)) {
+      return { success: false, error: 'End time must be after start time' }
+    }
 
     const [war] = await db.insert(wars).values({
       name: data.name,
@@ -91,18 +95,20 @@ export async function deleteWar(id: string) {
   return { success: true }
 }
 
-/** Convert war to products — runs after war ends */
-export async function convertWarToProducts(warId: string) {
-  // NOTE: No verifyAdmin() here — this is called from checkExpiredWars()
-  // which runs on the PUBLIC homepage server component.
-  // TODO: Create separate internal/admin versions, or remove export.
-  const [war] = await db.select().from(wars).where(eq(wars.id, warId))
-  if (!war || war.converted) return
+/** Convert war to products — uses atomic CAS to prevent duplicates */
+async function convertWarToProductsInternal(warId: string) {
+  // Atomic compare-and-swap: mark as converted first (prevents concurrent duplicates)
+  const [updated] = await db.update(wars)
+    .set({ converted: true })
+    .where(and(eq(wars.id, warId), eq(wars.converted, false)))
+    .returning()
+
+  // If no row updated, another call already converted it
+  if (!updated) return
 
   const items = await db.select().from(warItems).where(eq(warItems.warId, warId))
 
   for (const item of items) {
-    // For now, use original stock as remaining
     const [product] = await db.insert(products).values({
       name: item.name,
       brand: item.brand,
@@ -114,26 +120,36 @@ export async function convertWarToProducts(warId: string) {
       image: item.image,
       warPrice: item.price,
       launchedAt: new Date(),
+      stockData: '{}',
     }).returning()
 
-    // Link war item to created product
     await db.update(warItems).set({ productId: product.id }).where(eq(warItems.id, item.id))
   }
 
-  // Mark war as converted
-  await db.update(wars).set({ converted: true }).where(eq(wars.id, warId))
   revalidatePath('/')
   revalidatePath('/admin/wars')
   revalidatePath('/admin/products')
 }
 
-/** Check and auto-convert expired wars */
+/** Convert war to products (admin version — with auth) */
+export async function convertWarToProducts(warId: string) {
+  try {
+    await verifyAdmin()
+    await convertWarToProductsInternal(warId)
+    return { success: true }
+  } catch (error) {
+    console.error('Error converting war:', error)
+    return { success: false, error: 'Failed to convert war.' }
+  }
+}
+
+/** Check and auto-convert expired wars (public — no auth needed) */
 export async function checkExpiredWars() {
   const now = new Date()
   const expired = await db.select().from(wars).where(
     and(eq(wars.active, true), eq(wars.converted, false), lte(wars.endTime, now))
   )
   for (const war of expired) {
-    await convertWarToProducts(war.id)
+    await convertWarToProductsInternal(war.id)
   }
 }

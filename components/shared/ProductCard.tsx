@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { formatCurrency } from '@/lib/utils'
+import { getFirstSizePrice } from '@/lib/price'
 
 type ProductCardProps = {
   id: string
@@ -9,10 +10,13 @@ type ProductCardProps = {
   price: number
   image: string | null
   stock?: number
+  stockData?: string
+  sizes?: string
 }
 
 export function ProductCard({ product }: { product: ProductCardProps }) {
   const isSoldOut = (product.stock ?? 0) <= 0
+  const displayPrice = getFirstSizePrice(product.stockData, product.sizes || '', product.price)
 
   return (
     <Link href={`/product/${product.id}`} className="group block">
@@ -43,9 +47,14 @@ export function ProductCard({ product }: { product: ProductCardProps }) {
       <p className="text-sm font-semibold line-clamp-1 mb-1">
         {product.name}
       </p>
-      <p className="text-sm font-bold">
-        {formatCurrency(product.price)}
-      </p>
+      <div className="flex items-center gap-2">
+        {displayPrice.hasDiscount && (
+          <span className="text-xs text-muted-foreground line-through">{formatCurrency(displayPrice.original)}</span>
+        )}
+        <p className="text-sm font-bold">
+          {formatCurrency(displayPrice.final)}
+        </p>
+      </div>
     </Link>
   )
 }

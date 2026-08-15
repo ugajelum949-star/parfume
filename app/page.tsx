@@ -31,6 +31,7 @@ export default async function Home() {
     heroImage,
     heroForHim,
     heroForHer,
+    heroForEveryone,
   ] = await Promise.all([
     db.select().from(banners).where(eq(banners.active, true)).orderBy(desc(banners.order)),
     db.select().from(products).orderBy(desc(products.createdAt)).limit(50),
@@ -40,6 +41,7 @@ export default async function Home() {
     getSetting('heroImage'),
     getSetting('heroForHim'),
     getSetting('heroForHer'),
+    getSetting('heroForEveryone'),
   ])
 
   return (
@@ -48,7 +50,7 @@ export default async function Home() {
       <Header />
 
       {/* Hero — full-width image */}
-      <section className="relative h-[70vh] md:h-[85vh] overflow-hidden">
+      <section className={`relative overflow-hidden ${heroImage ? 'h-[70vh] md:h-[85vh]' : 'h-[40vh] md:h-[50vh]'}`}>
         <div className="absolute inset-0">
           {heroImage ? (
             <Image
@@ -102,11 +104,12 @@ export default async function Home() {
       {/* Scent Family Cards */}
       <ScentCards />
 
-      {/* For Him / For Her */}
+      {/* For Him / For Her / Unisex */}
       <GenderSplit
         products={allProducts}
         heroForHim={heroForHim}
         heroForHer={heroForHer}
+        heroForEveryone={heroForEveryone}
       />
 
 {/* Blog */}

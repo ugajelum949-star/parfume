@@ -45,7 +45,7 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
   const [customerCity, setCustomerCity] = useState('')
   const [customerPostalCode, setCustomerPostalCode] = useState('')
   const [customerProvince, setCustomerProvince] = useState('')
-  const [shippingService, setShippingService] = useState<'regular' | 'instant' | 'next_day'>('regular')
+  const [shippingService, setShippingService] = useState<'reguler' | 'instant' | 'next_day'>('reguler')
 
   const [giftWrap, setGiftWrap] = useState(false)
   const [giftWrapNote, setGiftWrapNote] = useState('')
@@ -79,12 +79,12 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
   useEffect(() => {
     async function init() {
       if (shippingZone === 'jabodetabek' || shippingZone === 'jawa') {
-        if (shippingService !== 'regular' && shippingService !== 'instant') {
-          setShippingService('regular')
+        if (shippingService !== 'reguler' && shippingService !== 'instant') {
+          setShippingService('reguler')
         }
       } else {
-        if (shippingService !== 'regular' && shippingService !== 'next_day') {
-          setShippingService('regular')
+        if (shippingService !== 'reguler' && shippingService !== 'next_day') {
+          setShippingService('reguler')
         }
       }
     }
@@ -104,6 +104,10 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
     shippingService,
     isTransfer: selectedMethod?.type === 'transfer',
     freeShippingThreshold: Number(initialSettings.shipping_free_threshold) || undefined,
+    customizationFee: Number(initialSettings.shipping_customization_fee) || undefined,
+    transferDiscount: Number(initialSettings.shipping_transfer_discount) || undefined,
+    instantPrice: Number(initialSettings.shipping_instant_price) || undefined,
+    nextdaySurcharge: Number(initialSettings.shipping_nextday_surcharge) || undefined,
   })
 
   const finalTotal = orderCalc.total + giftWrapCost
@@ -386,9 +390,21 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
                     <span className="text-muted-foreground">Ongkir ({shippingZone})</span>
                     <span>{orderCalc.shipping === 0 ? <span className="text-green-500">Gratis</span> : formatCurrency(orderCalc.shipping)}</span>
                   </div>
+                  {orderCalc.customization > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Biaya Customization</span>
+                      <span>{formatCurrency(orderCalc.customization)}</span>
+                    </div>
+                  )}
                   {orderCalc.promo?.activePromos && orderCalc.promo.activePromos.length > 0 && (
                     <div className="text-xs text-green-500 space-y-1">
                       {orderCalc.promo.activePromos.map((promo, i) => <p key={i}>🎉 {promo}</p>)}
+                    </div>
+                  )}
+                  {orderCalc.transferDiscount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Diskon Transfer</span>
+                      <span className="text-green-500">-{formatCurrency(orderCalc.transferDiscount)}</span>
                     </div>
                   )}
                   {giftWrapCost > 0 && (
