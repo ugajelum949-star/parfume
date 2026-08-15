@@ -55,8 +55,8 @@ export async function login(prevState: { error?: string }, formData: FormData) {
     })
 
   } catch (error) {
+    if (isRedirectError(error)) throw error
     console.error('Login error:', error)
-    const errObj = error as { code?: string, message?: string }
     return { error: 'Login failed. Please try again.' }
   }
 

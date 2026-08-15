@@ -8,8 +8,6 @@ import DOMPurify from 'isomorphic-dompurify'
 
 export const dynamic = 'force-dynamic'
 
-export const revalidate = 60
-
 const categoryColors: Record<string, string> = {
   'Care Tips': 'bg-emerald-500/10 text-emerald-600',
   'Scent Guide': 'bg-blue-500/10 text-blue-600',

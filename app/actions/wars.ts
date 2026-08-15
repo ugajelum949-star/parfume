@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db'
 import { wars, warItems, products } from '@/db/schema'
-import { eq, and, lte, gt, desc, sql } from 'drizzle-orm'
+import { eq, and, lte, gt, desc } from 'drizzle-orm'
 import { verifyAdmin } from './auth'
 import { revalidatePath } from 'next/cache'
 
