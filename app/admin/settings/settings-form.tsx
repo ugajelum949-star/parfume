@@ -388,7 +388,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
               {[
                 { key: 'heroForHim', label: 'For Him', folder: 'homepage' },
                 { key: 'heroForHer', label: 'For Her', folder: 'homepage' },
-                { key: 'heroUnisex', label: 'Unisex', folder: 'homepage' },
+                { key: 'heroUnisex', label: 'For Everyone', folder: 'homepage' },
               ].map(({ key, label, folder }) => (
                 <div key={key} className="space-y-2">
                   <Label className="text-sm font-medium">{label}</Label>

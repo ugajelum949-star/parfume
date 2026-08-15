@@ -1,5 +1,6 @@
 'use server'
 
+import sharp from 'sharp'
 import { uploadToS3, getPresignedUploadUrl } from '@/lib/s3-storage'
 import { applyWatermark } from '@/lib/watermark'
 import { verifyAdmin } from './auth'
@@ -22,7 +23,7 @@ export async function generateUploadUrl(folder: string, filename: string, conten
   }
 }
 
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
 const MAX_FILE_SIZE = 20 * 1024 * 1024 // 20MB
 
 export async function uploadImage(base64Data: string, folder: string) {
@@ -50,7 +51,7 @@ export async function uploadImage(base64Data: string, folder: string) {
     }
 
     // Apply watermark to product images only (skip for logos, banners, etc.)
-    const watermarked = folder === 'logos' ? base64Data : await applyWatermark(base64Data)
+    const watermarked = folder === 'logos' ? await forceJpg(base64Data) : await applyWatermark(base64Data)
     const publicUrl = await uploadToS3(watermarked, folder)
 
     return { success: true, url: publicUrl }
@@ -59,4 +60,10 @@ export async function uploadImage(base64Data: string, folder: string) {
     const msg = error instanceof Error ? error.message : String(error)
     return { success: false, error: msg || 'Failed to upload image' }
   }
+}
+
+async function forceJpg(base64Data: string): Promise<Buffer> {
+  const matches = base64Data.match(/^data:[A-Za-z-+/]+;base64,(.+)$/)
+  const buf = Buffer.from(matches ? matches[1] : base64Data, 'base64')
+  return sharp(buf).jpeg({ quality: 90 }).toBuffer()
 }

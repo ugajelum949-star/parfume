@@ -50,7 +50,7 @@ export function GenderSplit({ products, heroForHim, heroForHer, heroForEveryone 
       </div>
 
       {/* For Everyone (Unisex) */}
-      {unisexProducts.length > 0 && (
+      {(unisexProducts.length > 0 || heroForEveryone) && (
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-4 md:gap-6">
           <Link href="/products?gender=Unisex" className="group relative aspect-[4/3] md:aspect-auto md:h-full rounded-xl overflow-hidden">
             {heroForEveryone ? (

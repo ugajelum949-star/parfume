@@ -31,6 +31,7 @@ export async function applyWatermark(base64Data: string): Promise<Buffer> {
     .toBuffer()
 
   return sharp(imageBuffer)
+    .jpeg({ quality: 90 })
     .composite([{ input: logoTile, tile: true, blend: 'over' }])
     .toBuffer()
 }
