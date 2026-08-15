@@ -46,6 +46,7 @@ export async function uploadToS3(fileData: string | Buffer, folder: string): Pro
     Key: fileName,
     Body: buffer,
     ContentType: mimeType,
+    ACL: 'public-read',
   });
 
   await s3Client.send(command);
@@ -89,6 +90,7 @@ export async function getPresignedUploadUrl(folder: string, filename: string, co
     Bucket: BUCKET,
     Key: uniqueFilename,
     ContentType: contentType,
+    ACL: 'public-read',
   });
 
   const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
