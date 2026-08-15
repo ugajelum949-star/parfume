@@ -71,7 +71,7 @@ export function Header() {
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <Link href="/" className="flex items-center gap-2">
-              {storeLogo && <img src={storeLogo} alt={storeName} className="w-8 h-8 md:w-9 md:h-9 rounded-lg object-contain" />}
+              <img src={storeLogo || '/img.png'} alt={storeName} className="w-8 h-8 md:w-9 md:h-9 rounded-lg object-contain" />
               <span className="text-lg md:text-xl font-bold tracking-tight">{storeName || 'Store'}</span>
             </Link>
           </div>

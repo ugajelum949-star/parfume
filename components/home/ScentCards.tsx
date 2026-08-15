@@ -20,7 +20,7 @@ export function ScentCards({ images }: { images?: ScentImages }) {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 overflow-hidden">
         {scentFamilies.map(family => (
           <Link
             key={family.name}
