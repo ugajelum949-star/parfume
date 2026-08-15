@@ -4,6 +4,8 @@ import { getPosts } from '@/app/actions/posts'
 import { Header } from '@/components/layout/Header'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Blog — Tips & Guide Parfum',
   description: 'Temukan tips merawat parfum, panduan scent family, dan rekomendasi parfum terbaik untukmu.',
