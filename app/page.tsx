@@ -31,7 +31,11 @@ export default async function Home() {
     heroImage,
     heroForHim,
     heroForHer,
-    heroForEveryone,
+    heroUnisex,
+    scentFresh,
+    scentFloral,
+    scentWoody,
+    scentAmber,
   ] = await Promise.all([
     db.select().from(banners).where(eq(banners.active, true)).orderBy(desc(banners.order)),
     db.select().from(products).orderBy(desc(products.createdAt)).limit(50),
@@ -41,7 +45,11 @@ export default async function Home() {
     getSetting('heroImage'),
     getSetting('heroForHim'),
     getSetting('heroForHer'),
-    getSetting('heroForEveryone'),
+    getSetting('heroUnisex'),
+    getSetting('scentFresh'),
+    getSetting('scentFloral'),
+    getSetting('scentWoody'),
+    getSetting('scentAmber'),
   ])
 
   return (
@@ -102,14 +110,14 @@ export default async function Home() {
       <PopularSection products={allProducts} />
 
       {/* Scent Family Cards */}
-      <ScentCards />
+      <ScentCards images={{ fresh: scentFresh, floral: scentFloral, woody: scentWoody, amber: scentAmber }} />
 
       {/* For Him / For Her / Unisex */}
       <GenderSplit
         products={allProducts}
         heroForHim={heroForHim}
         heroForHer={heroForHer}
-        heroForEveryone={heroForEveryone}
+        heroForEveryone={heroUnisex}
       />
 
 {/* Blog */}
