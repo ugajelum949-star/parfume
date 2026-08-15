@@ -4,7 +4,6 @@ import { getPost } from '@/app/actions/posts'
 import { Header } from '@/components/layout/Header'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import DOMPurify from 'isomorphic-dompurify'
 
 export const dynamic = 'force-dynamic'
 
@@ -137,7 +136,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
         <div
           className="prose prose-invert max-w-none text-foreground"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
+          dangerouslySetInnerHTML={{ __html: html }}
         />
       </article>
     </div>
