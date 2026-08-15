@@ -11,49 +11,69 @@ export async function getBanners() {
 }
 
 export async function createBanner(formData: FormData) {
-  await verifyAdmin()
-  const title = (formData.get('title') as string || '').trim()
-  const image = formData.get('image') as string
-  const link = (formData.get('link') as string || '').trim()
-  const active = formData.get('active') === 'true'
-  const order = parseInt(formData.get('order') as string) || 0
+  try {
+    await verifyAdmin()
+    const title = (formData.get('title') as string || '').trim()
+    const image = formData.get('image') as string
+    const link = (formData.get('link') as string || '').trim()
+    const active = formData.get('active') === 'true'
+    const order = parseInt(formData.get('order') as string) || 0
 
-  if (!image) return { success: false, error: 'Image is required.' }
+    if (!image) return { success: false, error: 'Image is required.' }
 
-  await db.insert(banners).values({ title: title || null, image, link: link || null, active, order })
-  revalidatePath('/')
-  revalidatePath('/admin/banners')
-  return { success: true }
+    await db.insert(banners).values({ title: title || null, image, link: link || null, active, order })
+    revalidatePath('/')
+    revalidatePath('/admin/banners')
+    return { success: true }
+  } catch (error) {
+    console.error('Error creating banner:', error)
+    return { success: false, error: 'Failed to create banner.' }
+  }
 }
 
 export async function updateBanner(id: string, formData: FormData) {
-  await verifyAdmin()
-  const title = (formData.get('title') as string || '').trim()
-  const image = formData.get('image') as string
-  const link = (formData.get('link') as string || '').trim()
-  const active = formData.get('active') === 'true'
-  const order = parseInt(formData.get('order') as string) || 0
+  try {
+    await verifyAdmin()
+    const title = (formData.get('title') as string || '').trim()
+    const image = formData.get('image') as string
+    const link = (formData.get('link') as string || '').trim()
+    const active = formData.get('active') === 'true'
+    const order = parseInt(formData.get('order') as string) || 0
 
-  await db.update(banners).set({
-    title: title || null, image, link: link || null, active, order,
-  }).where(eq(banners.id, id))
-  revalidatePath('/')
-  revalidatePath('/admin/banners')
-  return { success: true }
+    await db.update(banners).set({
+      title: title || null, image, link: link || null, active, order,
+    }).where(eq(banners.id, id))
+    revalidatePath('/')
+    revalidatePath('/admin/banners')
+    return { success: true }
+  } catch (error) {
+    console.error('Error updating banner:', error)
+    return { success: false, error: 'Failed to update banner.' }
+  }
 }
 
 export async function deleteBanner(id: string) {
-  await verifyAdmin()
-  await db.delete(banners).where(eq(banners.id, id))
-  revalidatePath('/')
-  revalidatePath('/admin/banners')
-  return { success: true }
+  try {
+    await verifyAdmin()
+    await db.delete(banners).where(eq(banners.id, id))
+    revalidatePath('/')
+    revalidatePath('/admin/banners')
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting banner:', error)
+    return { success: false, error: 'Failed to delete banner.' }
+  }
 }
 
 export async function toggleBanner(id: string, active: boolean) {
-  await verifyAdmin()
-  await db.update(banners).set({ active }).where(eq(banners.id, id))
-  revalidatePath('/')
-  revalidatePath('/admin/banners')
-  return { success: true }
+  try {
+    await verifyAdmin()
+    await db.update(banners).set({ active }).where(eq(banners.id, id))
+    revalidatePath('/')
+    revalidatePath('/admin/banners')
+    return { success: true }
+  } catch (error) {
+    console.error('Error toggling banner:', error)
+    return { success: false, error: 'Failed to toggle banner.' }
+  }
 }

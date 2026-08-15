@@ -51,7 +51,7 @@ export async function uploadImage(base64Data: string, folder: string) {
     }
 
     // Apply watermark to product images only (skip for logos, banners, etc.)
-    const watermarked = folder === 'logos' ? await forceJpg(base64Data) : await applyWatermark(base64Data)
+    const watermarked = folder === 'products' ? await applyWatermark(base64Data) : await forceJpg(base64Data)
     const publicUrl = await uploadToS3(watermarked, folder)
 
     return { success: true, url: publicUrl }

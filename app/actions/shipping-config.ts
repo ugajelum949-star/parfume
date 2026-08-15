@@ -34,13 +34,13 @@ export async function getShippingConfig(): Promise<ShippingConfig> {
   ])
 
   return {
-    freeShippingThreshold: Number(threshold) || DEFAULTS.freeShippingThreshold,
-    customizationFee: Number(fee) || DEFAULTS.customizationFee,
-    transferDiscount: Number(discount) || DEFAULTS.transferDiscount,
-    instantPrice: Number(instant) || DEFAULTS.instantPrice,
-    nextDaySurcharge: Number(nextDay) || DEFAULTS.nextDaySurcharge,
-    promoQtyBundle: Number(bundle) || DEFAULTS.promoQtyBundle,
-    promoQtyMega: Number(mega) || DEFAULTS.promoQtyMega,
+    freeShippingThreshold: threshold !== null ? Number(threshold) : DEFAULTS.freeShippingThreshold,
+    customizationFee: fee !== null ? Number(fee) : DEFAULTS.customizationFee,
+    transferDiscount: discount !== null ? Number(discount) : DEFAULTS.transferDiscount,
+    instantPrice: instant !== null ? Number(instant) : DEFAULTS.instantPrice,
+    nextDaySurcharge: nextDay !== null ? Number(nextDay) : DEFAULTS.nextDaySurcharge,
+    promoQtyBundle: bundle !== null ? Number(bundle) : DEFAULTS.promoQtyBundle,
+    promoQtyMega: mega !== null ? Number(mega) : DEFAULTS.promoQtyMega,
   }
 }
 

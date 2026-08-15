@@ -60,7 +60,7 @@ export default function InvoiceClient({
     toast.success('Order ID disalin')
   }
 
-  const phone = customerPhone?.replace(/\D/g, '') || ''
+  const phone = customerPhone?.replace(/\D/g, '').replace(/^0/, '62') || ''
   const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(`Konfirmasi pembayaran order ${orderId}`)}`
   const tgLink = storeTelegramUsername ? `https://t.me/${storeTelegramUsername.replace(/^@/, '')}` : ''
 

@@ -206,8 +206,9 @@ export default function ProductsPage() {
 
   function resetForm() {
     setName(''); setBrand('Other'); setCategory(SCENT_FAMILIES[0]); setGender('Unisex')
-    setPrice(''); setDescription(''); setSizes('10ml,30ml,50ml,100ml')
-    setStock('20'); setIsBestSeller(false); setImageUrl('')
+    setPrice(''); setDescription(''); setSizes('100ml,150ml')
+    setStock('20'); setIsBestSeller(false); setIsFeatured(false); setImageUrl('')
+    setExtraImages([]); setSizePrices({}); setSizeSalePrices({})
     setEditingId(null)
   }
 

@@ -54,11 +54,14 @@ export const PROVINCES: Province[] = [
   { id: 'KalimantanSelatan', name: 'Kalimantan Selatan', zoneId: 'kalimantan' },
   { id: 'KalimantanTimur', name: 'Kalimantan Timur', zoneId: 'kalimantan' },
   { id: 'KalimantanUtara', name: 'Kalimantan Utara', zoneId: 'kalimantan' },
-  // Sulawesi (4)
+  // Sulawesi (5)
   { id: 'SulawesiUtara', name: 'Sulawesi Utara', zoneId: 'sulawesi' },
   { id: 'SulawesiTengah', name: 'Sulawesi Tengah', zoneId: 'sulawesi' },
   { id: 'SulawesiSelatan', name: 'Sulawesi Selatan', zoneId: 'sulawesi' },
   { id: 'SulawesiTenggara', name: 'Sulawesi Tenggara', zoneId: 'sulawesi' },
+  { id: 'SulawesiBarat', name: 'Sulawesi Barat', zoneId: 'sulawesi' },
+  // Gorontalo
+  { id: 'Gorontalo', name: 'Gorontalo', zoneId: 'sulawesi' },
   // Bali & Nusa Tenggara (3)
   { id: 'Bali', name: 'Bali', zoneId: 'bali_nusa' },
   { id: 'NTB', name: 'Nusa Tenggara Barat', zoneId: 'bali_nusa' },
@@ -66,8 +69,14 @@ export const PROVINCES: Province[] = [
   // Maluku (2)
   { id: 'Maluku', name: 'Maluku', zoneId: 'maluku' },
   { id: 'MalukuUtara', name: 'Maluku Utara', zoneId: 'maluku' },
-  // Papua (1)
+  // Papua (7)
   { id: 'Papua', name: 'Papua', zoneId: 'papua' },
+  { id: 'PapuaBarat', name: 'Papua Barat', zoneId: 'papua' },
+  { id: 'PapuaSelatan', name: 'Papua Selatan', zoneId: 'papua' },
+  { id: 'PapuaTengah', name: 'Papua Tengah', zoneId: 'papua' },
+  { id: 'PapuaPegunungan', name: 'Papua Pegunungan', zoneId: 'papua' },
+  { id: 'PapuaBaratDaya', name: 'Papua Barat Daya', zoneId: 'papua' },
+  { id: 'KepulauanRiau', name: 'Kepulauan Riau', zoneId: 'sumatera' },
 ];
 
 const INSTANT_PRICE = 45000;

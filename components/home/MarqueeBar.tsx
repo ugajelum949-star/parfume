@@ -10,7 +10,7 @@ export function MarqueeBar() {
     <div className="bg-card border-b border-border overflow-hidden">
       <div className="animate-marquee whitespace-nowrap py-3">
         <span className="text-xs uppercase tracking-widest text-muted-foreground inline-block">
-          {text} · {text} · {text} ·
+          {text} · {text} ·
         </span>
       </div>
     </div>

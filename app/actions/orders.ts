@@ -89,11 +89,11 @@ export async function createOrder(data: {
       shippingZone: data.shippingZone as ZoneId,
       shippingService: data.shippingService,
       isTransfer: paymentMethod.type === 'transfer',
-      freeShippingThreshold: Number(settingsMap.get('shipping_free_threshold')) || undefined,
-      customizationFee: Number(settingsMap.get('shipping_customization_fee')) || undefined,
-      transferDiscount: Number(settingsMap.get('shipping_transfer_discount')) || undefined,
-      instantPrice: Number(settingsMap.get('shipping_instant_price')) || undefined,
-      nextdaySurcharge: Number(settingsMap.get('shipping_nextday_surcharge')) || undefined,
+      freeShippingThreshold: settingsMap.get('shipping_free_threshold') ? Number(settingsMap.get('shipping_free_threshold')) : undefined,
+      customizationFee: settingsMap.get('shipping_customization_fee') ? Number(settingsMap.get('shipping_customization_fee')) : undefined,
+      transferDiscount: settingsMap.get('shipping_transfer_discount') ? Number(settingsMap.get('shipping_transfer_discount')) : undefined,
+      instantPrice: settingsMap.get('shipping_instant_price') ? Number(settingsMap.get('shipping_instant_price')) : undefined,
+      nextdaySurcharge: settingsMap.get('shipping_nextday_surcharge') ? Number(settingsMap.get('shipping_nextday_surcharge')) : undefined,
     })
 
     // Include gift wrap in total
@@ -113,12 +113,13 @@ export async function createOrder(data: {
       giftWrapNote: data.giftWrapNote || null,
     }).returning()
 
-    // 6. Insert items with DB prices
+    // 6. Insert items with DB prices + warItemId
     if (verifiedItems.length > 0) {
       await db.insert(orderItems).values(
         verifiedItems.map((item) => ({
           orderId: order.id,
           productId: item.productId || null,
+          warItemId: item.warItemId || null,
           quantity: item.quantity,
           size: item.size,
           price: item.price,
@@ -128,16 +129,33 @@ export async function createOrder(data: {
 
       // 7. Decrement stock atomically (prevents TOCTOU race)
       for (const item of verifiedItems) {
-        if (item.source === 'war' && item.warItemId) {
-          // Atomic war stock decrement
-          await db.update(warItems)
+        if (item.source === 'war' && item.productId) {
+          // War-converted product: decrement products table
+          const result = await db.update(products)
+            .set({ stock: sql`${products.stock} - ${item.quantity}` })
+            .where(and(eq(products.id, item.productId), sql`${products.stock} >= ${item.quantity}`))
+            .returning({ id: products.id })
+          if (result.length === 0) {
+            return { success: false, error: `"${item.size}" stok tidak mencukupi` }
+          }
+        } else if (item.source === 'war' && item.warItemId) {
+          // Active war (no product yet): decrement warItems table
+          const result = await db.update(warItems)
             .set({ stock: sql`${warItems.stock} - ${item.quantity}` })
             .where(and(eq(warItems.id, item.warItemId), sql`${warItems.stock} >= ${item.quantity}`))
+            .returning({ id: warItems.id })
+          if (result.length === 0) {
+            return { success: false, error: `Stok war tidak mencukupi` }
+          }
         } else {
-          // Atomic product stock decrement
-          await db.update(products)
+          // Normal product: decrement products table
+          const result = await db.update(products)
             .set({ stock: sql`${products.stock} - ${item.quantity}` })
             .where(and(eq(products.id, item.productId!), sql`${products.stock} >= ${item.quantity}`))
+            .returning({ id: products.id })
+          if (result.length === 0) {
+            return { success: false, error: `Stok tidak mencukupi` }
+          }
         }
       }
     }

@@ -6,7 +6,7 @@ import { rateLimit } from '@/lib/ratelimit'
 export const dynamic = 'force-dynamic';
 
 // Settings keys that should NEVER be exposed via public API
-const HIDDEN_KEYS = ['telegramBotToken', 'telegramChatId']
+const HIDDEN_KEYS = ['telegramBotToken', 'telegramChatId', 'bankName', 'bankAccount', 'bankHolder', 'whatsappConfirm']
 
 export async function GET(req: Request) {
   // Rate limit: 30 requests per minute per IP

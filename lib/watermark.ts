@@ -14,7 +14,12 @@ export async function applyWatermark(base64Data: string): Promise<Buffer> {
 
   // Load logo — small tiles, many of them
   const logoPath = join(process.cwd(), 'public', 'img.png')
-  const logoBuffer = await readFile(logoPath)
+  let logoBuffer: Buffer
+  try {
+    logoBuffer = await readFile(logoPath)
+  } catch {
+    throw new Error('Watermark logo not found at public/img.png')
+  }
   const tileSize = Math.round(w / 5) // smaller = more logos
 
   // Resize + 4% opacity

@@ -57,7 +57,7 @@ export async function login(prevState: { error?: string }, formData: FormData) {
   } catch (error) {
     console.error('Login error:', error)
     const errObj = error as { code?: string, message?: string }
-    return { error: `ERROR: ${errObj.message || String(error)}` }
+    return { error: 'Login failed. Please try again.' }
   }
 
   redirect('/admin/dashboard')
@@ -78,12 +78,12 @@ export async function verifyAdmin() {
       redirect('/login')
     }
 
-    const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+    const [user] = await db.select({ id: users.id, email: users.email, role: users.role, name: users.name }).from(users).where(eq(users.id, userId)).limit(1)
 
     if (!user || user.role !== 'ADMIN') {
       redirect('/login')
     }
-    
+
     return user
   } catch (error) {
     if (isRedirectError(error)) throw error

@@ -33,6 +33,12 @@ export async function savePaymentMethod(
   }
 
   if (editingId) {
+    // Delete old S3 image if replacing
+    const [existing] = await db.select().from(paymentMethods).where(eq(paymentMethods.id, editingId))
+    if (existing?.qrisImageUrl && data.qrisImageUrl && existing.qrisImageUrl !== data.qrisImageUrl) {
+      await deleteFromS3(existing.qrisImageUrl)
+    }
+
     await db
       .update(paymentMethods)
       .set({

@@ -33,9 +33,9 @@ export function Footer() {
           <div>
             <h4 className="text-xs uppercase tracking-wider font-semibold text-foreground mb-3">Bantuan</h4>
             <ul className="space-y-2 mb-6">
-              <li><Link href="/products" className="hover:text-foreground transition-colors">FAQ</Link></li>
-              <li><Link href="/products" className="hover:text-foreground transition-colors">Pengiriman</Link></li>
-              <li><Link href="/products" className="hover:text-foreground transition-colors">Pengembalian</Link></li>
+              <li><span className="text-muted-foreground/50 cursor-default">FAQ</span></li>
+              <li><span className="text-muted-foreground/50 cursor-default">Pengiriman</span></li>
+              <li><span className="text-muted-foreground/50 cursor-default">Pengembalian</span></li>
             </ul>
             <h4 className="text-xs uppercase tracking-wider font-semibold text-foreground mb-3">Hubungi</h4>
             <ul className="space-y-2">

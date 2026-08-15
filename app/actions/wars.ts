@@ -123,7 +123,7 @@ async function convertWarToProductsInternal(warId: string) {
       stockData: '{}',
     }).returning()
 
-    await db.update(warItems).set({ productId: product.id }).where(eq(warItems.id, item.id))
+    await db.update(warItems).set({ productId: product.id, stock: 0 }).where(eq(warItems.id, item.id))
   }
 
   revalidatePath('/')

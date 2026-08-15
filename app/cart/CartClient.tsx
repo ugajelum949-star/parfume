@@ -240,8 +240,10 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
                     <select value={shippingService} onChange={e => setShippingService(e.target.value as typeof shippingService)} className="w-full bg-input border border-border rounded-lg px-3 py-2.5 text-sm text-foreground h-11">
                       {availableServices.map(s => {
                         let price = 0
-                        if (s.id === 'instant') price = orderCalc.promo?.freeShipping ? Math.max(0, 45000 - baseCost) : 45000
-                        else if (s.id === 'next_day') price = orderCalc.promo?.freeShipping ? 20000 : (baseCost + 20000)
+                        const instantPrice = Number(initialSettings.shipping_instant_price) || 45000
+                        const nextdaySurcharge = Number(initialSettings.shipping_nextday_surcharge) || 20000
+                        if (s.id === 'instant') price = orderCalc.promo?.freeShipping ? Math.max(0, instantPrice - baseCost) : instantPrice
+                        else if (s.id === 'next_day') price = orderCalc.promo?.freeShipping ? nextdaySurcharge : (baseCost + nextdaySurcharge)
                         else price = orderCalc.promo?.freeShipping ? 0 : baseCost
                         const priceLabel = price === 0 ? 'Gratis' : formatCurrency(price)
                         return <option key={s.id} value={s.id}>{s.label} ({priceLabel})</option>
