@@ -11,7 +11,7 @@ import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/utils'
 import { parseAllSizePrices, getPostWarPrice } from '@/lib/price'
-import { getProducts } from '@/app/actions/products'
+import { getPublicProducts } from '@/app/actions/products'
 import { useCompareStore } from '@/features/compare/store'
 import toast from 'react-hot-toast'
 
@@ -49,7 +49,7 @@ function CompareContent() {
       return
     }
 
-    getProducts().then((data) => {
+    getPublicProducts().then((data) => {
       const all = data as Product[]
       const filtered = all.filter((p) => ids.includes(p.id))
       setProducts(filtered)

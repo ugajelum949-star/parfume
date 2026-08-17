@@ -13,7 +13,7 @@ import { formatCurrency } from '@/lib/utils'
 import { getFirstSizePrice, getPostWarPrice } from '@/lib/price'
 import { useCartStore } from '@/features/cart/store'
 import { useWishlistStore } from '@/features/wishlist/store'
-import { getProducts } from '@/app/actions/products'
+import { getPublicProducts } from '@/app/actions/products'
 
 type Product = {
   id: string
@@ -41,7 +41,7 @@ export function WishlistContent() {
   const [activeCategory, setActiveCategory] = useState<string>('All')
 
   useEffect(() => {
-    getProducts().then((data) => {
+    getPublicProducts().then((data) => {
       setProducts(data as Product[])
       setLoading(false)
     })
