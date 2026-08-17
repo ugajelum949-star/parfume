@@ -20,8 +20,17 @@ function signSession(userId: string): string {
 function verifySession(raw: string): string | null {
   if (!raw || !raw.includes('.')) return null
   const [userId, signature] = raw.split('.')
+  if (!userId || !signature) return null
   const expected = crypto.createHmac('sha256', SECRET).update(userId).digest('hex')
-  if (signature !== expected) return null
+  // Timing-safe comparison to prevent timing attacks
+  try {
+    const sigBuf = Buffer.from(signature, 'hex')
+    const expBuf = Buffer.from(expected, 'hex')
+    if (sigBuf.length !== expBuf.length) return null
+    if (!crypto.timingSafeEqual(sigBuf, expBuf)) return null
+  } catch {
+    return null
+  }
   return userId
 }
 

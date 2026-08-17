@@ -7,6 +7,7 @@ import { calculateOrderTotal, type ZoneId } from '@/lib/shipping'
 import { getSizePrice } from '@/lib/price'
 import { verifyAdmin } from './auth'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 
 const ALLOWED_STATUSES = ['PENDING', 'PROOF_UPLOADED', 'PAID', 'PROCESSING', 'SHIPPED', 'COMPLETED'] as const
 const ALLOWED_SHIPPING_SERVICES = ['reguler', 'instant', 'next_day'] as const
@@ -38,11 +39,15 @@ export async function createOrder(data: {
       return { success: false, error: 'Invalid shipping service' }
     }
 
+    // Extract IP server-side (never trust client-provided ipAddress)
+    const hdrs = await headers()
+    const clientIp = hdrs.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || hdrs.get('x-real-ip')
+      || null
+
     // War order limit: only enforced when order contains war items
     const hasWarItems = data.items.some(i => i.source === 'war')
-    if (hasWarItems) {
-      const clientIp = data.ipAddress || 'unknown'
-      if (clientIp !== 'unknown') {
+    if (hasWarItems && clientIp) {
         // Get configurable limit from settings (default: 2)
         const limitRaw = await db.select().from(settings).where(eq(settings.key, 'war_max_orders_per_ip')).limit(1)
         const maxOrders = Number(limitRaw[0]?.value) || 2
@@ -56,7 +61,6 @@ export async function createOrder(data: {
         if (recentWarOrders.length >= maxOrders) {
           return { success: false, error: `Batas pemesanan war tercapai (maks ${maxOrders} pesanan/24 jam per IP).` }
         }
-      }
     }
 
     const [paymentMethod] = await db.select().from(paymentMethods).where(and(eq(paymentMethods.id, data.paymentMethodId), eq(paymentMethods.isActive, true)))
@@ -142,6 +146,7 @@ export async function createOrder(data: {
       status: 'PENDING',
       giftWrap: data.giftWrap || false,
       giftWrapNote: data.giftWrapNote || null,
+      ipAddress: clientIp,
     }).returning()
 
     // 6. Insert items with DB prices + warItemId
