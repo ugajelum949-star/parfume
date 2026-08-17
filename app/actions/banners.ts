@@ -5,6 +5,7 @@ import { banners } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { verifyAdmin } from './auth'
 import { revalidatePath } from 'next/cache'
+import { deleteFromS3 } from '@/lib/s3-storage'
 
 export async function getBanners() {
   return db.select().from(banners).orderBy(banners.order)
@@ -55,6 +56,11 @@ export async function updateBanner(id: string, formData: FormData) {
 export async function deleteBanner(id: string) {
   try {
     await verifyAdmin()
+
+    // Fetch banner to get image URL before deleting
+    const [banner] = await db.select().from(banners).where(eq(banners.id, id)).limit(1)
+    if (banner?.image) await deleteFromS3(banner.image)
+
     await db.delete(banners).where(eq(banners.id, id))
     revalidatePath('/')
     revalidatePath('/admin/banners')

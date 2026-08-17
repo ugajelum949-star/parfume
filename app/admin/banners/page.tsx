@@ -11,6 +11,7 @@ import { Plus, Pencil, Trash2, X, Loader2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { getBanners, createBanner, updateBanner, deleteBanner, toggleBanner } from '@/app/actions/banners'
 import { uploadImage } from '@/app/actions/upload'
+import { compressImage, fileToBase64 } from '@/lib/compression'
 
 interface Banner {
   id: string
@@ -46,25 +47,21 @@ export default function AdminBannersPage() {
   }, [])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
     setUploading(true)
     try {
-      const reader = new FileReader()
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
+      const compressedFile = await compressImage(rawFile, 0.85, 1920)
+      const base64 = await fileToBase64(compressedFile)
       const result = await uploadImage(base64, 'banners')
       if (result.success && result.url) {
         setForm(f => ({ ...f, image: result.url! }))
-        toast.success('Image uploaded')
+        toast.success('Foto berhasil diunggah')
       } else {
-        toast.error(result.error || 'Upload failed')
+        toast.error(result.error || 'Gagal mengunggah foto')
       }
     } catch {
-      toast.error('Upload failed')
+      toast.error('Gagal memproses gambar')
     } finally {
       setUploading(false)
     }

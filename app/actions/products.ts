@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { products, productImages } from '@/db/schema'
 import { verifyAdmin } from './auth'
 import { eq, desc } from 'drizzle-orm'
+import { deleteFromS3 } from '@/lib/s3-storage'
 import { revalidatePath } from 'next/cache'
 
 export async function getProducts() {
@@ -93,6 +94,17 @@ export async function createProduct(formData: FormData) {
 export async function deleteProduct(id: string) {
   try {
     await verifyAdmin()
+
+    // Fetch images before deleting DB records
+    const [product] = await db.select().from(products).where(eq(products.id, id)).limit(1)
+    const extraImages = await db.select().from(productImages).where(eq(productImages.productId, id))
+
+    // Delete files from S3
+    if (product?.image) await deleteFromS3(product.image)
+    for (const img of extraImages) {
+      if (img.url) await deleteFromS3(img.url)
+    }
+
     await db.delete(products).where(eq(products.id, id))
     revalidatePath('/admin/products')
     revalidatePath('/')

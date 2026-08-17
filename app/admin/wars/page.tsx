@@ -9,6 +9,8 @@ import { Plus, Trash2, X, Loader2, Swords } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { getWars, createWar, deleteWar } from '@/app/actions/wars'
 import { uploadImage } from '@/app/actions/upload'
+import { compressImage, fileToBase64 } from '@/lib/compression'
+import { BRANDS } from '@/lib/config'
 
 interface WarItem {
   id?: string
@@ -60,16 +62,12 @@ export default function AdminWarsPage() {
   }, [])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, idx?: number) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
     setUploading(true)
     try {
-      const reader = new FileReader()
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
+      const compressedFile = await compressImage(rawFile, 0.85, 1920)
+      const base64 = await fileToBase64(compressedFile)
       const result = await uploadImage(base64, 'wars')
       if (result.success && result.url) {
         if (idx !== undefined) {
@@ -77,12 +75,12 @@ export default function AdminWarsPage() {
         } else {
           setWarImage(result.url)
         }
-        toast.success('Image uploaded')
+        toast.success('Foto berhasil diunggah')
       } else {
-        toast.error(result.error || 'Upload failed')
+        toast.error(result.error || 'Gagal mengunggah foto')
       }
     } catch {
-      toast.error('Upload failed')
+      toast.error('Gagal memproses gambar')
     } finally {
       setUploading(false)
     }
@@ -199,7 +197,14 @@ export default function AdminWarsPage() {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <Input placeholder="Name" value={item.name} onChange={e => updateItem(idx, 'name', e.target.value)} />
-                    <Input placeholder="Brand" value={item.brand} onChange={e => updateItem(idx, 'brand', e.target.value)} />
+                    <div>
+                      <Input list="war-brand-suggestions" placeholder="Brand (e.g. Mykonos, Velixir)" value={item.brand} onChange={e => updateItem(idx, 'brand', e.target.value)} />
+                      <datalist id="war-brand-suggestions">
+                        {BRANDS.map(b => (
+                          <option key={b} value={b} />
+                        ))}
+                      </datalist>
+                    </div>
                     <Input type="number" placeholder="Price" value={item.price || ''} onChange={e => updateItem(idx, 'price', Number(e.target.value))} />
                     <Input type="number" placeholder="Stock" value={item.stock || ''} onChange={e => updateItem(idx, 'stock', Number(e.target.value))} />
                   </div>

@@ -4,10 +4,20 @@ import { ProductCard } from '@/components/shared/ProductCard'
 
 type Product = { id: string; name: string; brand: string; price: number; image: string | null; gender: string; stock?: number; stockData?: string; sizes?: string }
 
-export function GenderSplit({ products, heroForHim, heroForHer, heroForEveryone }: { products: Product[]; heroForHim?: string | null; heroForHer?: string | null; heroForEveryone?: string | null }) {
-  const menProducts = products.filter(p => p.gender === 'Men').slice(0, 4)
-  const womenProducts = products.filter(p => p.gender === 'Women').slice(0, 4)
-  const unisexProducts = products.filter(p => p.gender === 'Unisex').slice(0, 4)
+interface GenderSplitProps {
+  products: Product[]
+  heroForHim?: string | null
+  heroForHer?: string | null
+  heroForEveryone?: string | null
+  curatedMen?: Product[]
+  curatedWomen?: Product[]
+  curatedUnisex?: Product[]
+}
+
+export function GenderSplit({ products, heroForHim, heroForHer, heroForEveryone, curatedMen, curatedWomen, curatedUnisex }: GenderSplitProps) {
+  const menProducts = curatedMen?.length ? curatedMen.slice(0, 4) : products.filter(p => p.gender === 'Men').slice(0, 4)
+  const womenProducts = curatedWomen?.length ? curatedWomen.slice(0, 4) : products.filter(p => p.gender === 'Women').slice(0, 4)
+  const unisexProducts = curatedUnisex?.length ? curatedUnisex.slice(0, 4) : products.filter(p => p.gender === 'Unisex').slice(0, 4)
 
   return (
     <section className="py-12 md:py-20 max-w-6xl mx-auto px-4 md:px-6 space-y-8">

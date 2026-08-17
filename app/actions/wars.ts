@@ -5,6 +5,7 @@ import { wars, warItems, products } from '@/db/schema'
 import { eq, and, lte, gt, desc } from 'drizzle-orm'
 import { verifyAdmin } from './auth'
 import { revalidatePath } from 'next/cache'
+import { deleteFromS3 } from '@/lib/s3-storage'
 
 /** Get all wars (admin) */
 export async function getWars() {
@@ -85,9 +86,20 @@ export async function createWar(data: {
   }
 }
 
-/** Delete war + items */
+/** Delete war + items + S3 files */
 export async function deleteWar(id: string) {
   await verifyAdmin()
+
+  // Fetch war items to get image URLs before deleting
+  const items = await db.select().from(warItems).where(eq(warItems.warId, id))
+  const [war] = await db.select().from(wars).where(eq(wars.id, id)).limit(1)
+
+  // Delete files from S3
+  if (war?.image) await deleteFromS3(war.image)
+  for (const item of items) {
+    if (item.image) await deleteFromS3(item.image)
+  }
+
   await db.delete(warItems).where(eq(warItems.warId, id))
   await db.delete(wars).where(eq(wars.id, id))
   revalidatePath('/')

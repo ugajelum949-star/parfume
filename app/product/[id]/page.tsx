@@ -23,24 +23,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const productUrl = `${baseUrl}/product/${product.id}`
 
   return {
-    title: `${product.brand} ${product.name}`,
-    description: product.description || `${product.brand} ${product.name} — Parfum branded original. Tersedia dalam ukuran ${product.sizes}.`,
-    keywords: [product.brand, product.name, product.category, 'parfum', 'perfume', 'parfum original'],
+    title: `${product.brand} ${product.name} Original`,
+    description: product.description || `${product.brand} ${product.name} 100% Original. Scent Family: ${product.category} (${product.gender}). Tersedia ukuran: ${product.sizes}. Jaminan produk authentic & gratis ongkir.`,
+    keywords: [
+      product.brand,
+      product.name,
+      `${product.brand} ${product.name}`,
+      `${product.brand} original`,
+      product.category,
+      product.gender,
+      'parfum original',
+      'decant parfum',
+      'review parfum',
+      'beli parfum online',
+      'parfum tahan lama'
+    ],
     alternates: {
       canonical: productUrl,
     },
     openGraph: {
-      title: `${product.brand} ${product.name}`,
-      description: product.description || `${product.brand} ${product.name} — Parfum branded original.`,
+      title: `${product.brand} ${product.name} Original — Parfume Store`,
+      description: product.description || `${product.brand} ${product.name} original bergaransi. Scent: ${product.category}, Gender: ${product.gender}.`,
       url: productUrl,
-      siteName: 'Parfume Store',
+      siteName: 'Parfume Store Indonesia',
       images: product.image ? [{ url: product.image, width: 800, height: 800, alt: `${product.brand} ${product.name}` }] : [],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.brand} ${product.name}`,
-      description: product.description || `${product.brand} ${product.name} — Parfum branded original.`,
+      title: `${product.brand} ${product.name} Original — Parfume Store`,
+      description: product.description || `${product.brand} ${product.name} 100% Original Authentic.`,
       images: product.image ? [product.image] : [],
     },
   }

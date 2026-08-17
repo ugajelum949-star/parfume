@@ -103,6 +103,27 @@ export function ProductDetail({ product }: { product: Product }) {
                 No Image
               </div>
             )}
+
+            {/* Watermark Overlay */}
+            <div
+              className="absolute inset-0 z-[5] pointer-events-none select-none overflow-hidden opacity-[0.06]"
+              aria-hidden="true"
+            >
+              <div
+                className="absolute inset-[-50%] w-[200%] h-[200%] flex flex-wrap items-center justify-center gap-4 rotate-[-25deg]"
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  letterSpacing: '3px',
+                  lineHeight: '2.5',
+                  color: 'white',
+                  wordSpacing: '20px',
+                }}
+              >
+                {'BEST PARFUME STORE '.repeat(200)}
+              </div>
+            </div>
+
             <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
               <ZoomIn className="w-4 h-4 text-white" />
             </div>

@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Katalog Parfum Original — Semua Scent Family',
-  description: 'Temukan parfum branded original: Fresh untuk kesegaran, Floral untuk keeleganan, Woody untuk kehangatan, Amber untuk kesensualan. Gratis ongkir untuk pembelian di atas Rp300.000.',
-  keywords: ['parfum original', 'parfum branded', 'katalog parfum', 'parfum Dior', 'parfum Chanel', 'parfum Tom Ford', 'parfum Creed'],
+  title: 'Katalog Lengkap Parfum Original — Mykonos, Velixir, Afnan & Desainer',
+  description: 'Jelajahi ratusan koleksi parfum original: brand lokal viral (Mykonos, Velixir, HMNS, SAFF & Co), parfum Arabian (Afnan, Lattafa, Armaf, Al Haramain), serta desainer ternama (Dior, Chanel, YSL, Tom Ford). Filter berdasarkan Scent Family: Fresh, Floral, Woody, Amber dan Gender: Men, Women, Unisex.',
+  keywords: [
+    'katalog parfum original', 'daftar harga parfum original', 'parfum mykonos lengkap', 'parfum velixir original', 'parfum afnan terlengkap', 'parfum lattafa murah', 'parfum pria original', 'parfum wanita tahan lama', 'parfum unisex', 'fresh scent perfume', 'floral scent perfume', 'woody scent perfume', 'amber scent perfume', 'decant parfum murah'
+  ],
   openGraph: {
-    title: 'Katalog Parfum Original — Parfume Store',
-    description: 'Dior, Chanel, Tom Ford, Creed & lebih. Gratis ongkir untuk pembelian di atas Rp300.000.',
+    title: 'Katalog Lengkap Parfum Original — Mykonos, Velixir, Afnan & Desainer',
+    description: 'Koleksi lengkap parfum original: Mykonos, Velixir, Afnan, Lattafa, Dior, Chanel, Tom Ford, Creed & lebih. Jaminan 100% Authentic & Gratis Ongkir.',
     type: 'website',
   },
   alternates: {

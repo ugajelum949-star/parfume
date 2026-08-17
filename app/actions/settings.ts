@@ -64,6 +64,48 @@ export async function updateSettings(data: Record<string, string>) {
   }
 }
 
+export async function getGenderSlots(): Promise<{
+  Men: string[]
+  Women: string[]
+  Unisex: string[]
+}> {
+  const raw = await getSetting('gender_curated_slots')
+  if (!raw) return { Men: [], Women: [], Unisex: [] }
+  try {
+    const parsed = JSON.parse(raw)
+    return {
+      Men: Array.isArray(parsed.Men) ? parsed.Men.slice(0, 4) : [],
+      Women: Array.isArray(parsed.Women) ? parsed.Women.slice(0, 4) : [],
+      Unisex: Array.isArray(parsed.Unisex) ? parsed.Unisex.slice(0, 4) : [],
+    }
+  } catch {
+    return { Men: [], Women: [], Unisex: [] }
+  }
+}
+
+export async function saveGenderSlots(slots: {
+  Men: string[]
+  Women: string[]
+  Unisex: string[]
+}) {
+  const isAdmin = await verifyAdmin()
+  if (!isAdmin) return { success: false, error: 'Unauthorized' }
+
+  try {
+    const sanitized = {
+      Men: Array.isArray(slots.Men) ? slots.Men.filter(Boolean).slice(0, 4) : [],
+      Women: Array.isArray(slots.Women) ? slots.Women.filter(Boolean).slice(0, 4) : [],
+      Unisex: Array.isArray(slots.Unisex) ? slots.Unisex.filter(Boolean).slice(0, 4) : [],
+    }
+    await updateSetting('gender_curated_slots', JSON.stringify(sanitized))
+    revalidatePath('/')
+    revalidatePath('/admin/featured-brands')
+    return { success: true }
+  } catch {
+    return { success: false, error: 'Gagal menyimpan kurasi slot gender' }
+  }
+}
+
 export async function updateSettingsFromForm(formData: FormData) {
   try {
     await verifyAdmin()

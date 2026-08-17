@@ -35,8 +35,29 @@ export function ProductCard({ product }: { product: ProductCardProps }) {
             No Image
           </div>
         )}
+
+        {/* Watermark Overlay */}
+        <div
+          className="absolute inset-0 z-[5] pointer-events-none select-none overflow-hidden opacity-[0.06]"
+          aria-hidden="true"
+        >
+          <div
+            className="absolute inset-[-50%] w-[200%] h-[200%] flex flex-wrap items-center justify-center gap-4 rotate-[-25deg]"
+            style={{
+              fontSize: '10px',
+              fontWeight: 800,
+              letterSpacing: '3px',
+              lineHeight: '2.5',
+              color: 'white',
+              wordSpacing: '20px',
+            }}
+          >
+            {'BEST PARFUME STORE '.repeat(200)}
+          </div>
+        </div>
+
         {isSoldOut && (
-          <div className="absolute top-2 left-2 bg-muted-foreground/80 text-background text-[10px] font-medium px-2 py-0.5 rounded">
+          <div className="absolute top-2 left-2 z-10 bg-muted-foreground/80 text-background text-[10px] font-medium px-2 py-0.5 rounded">
             Sold out
           </div>
         )}

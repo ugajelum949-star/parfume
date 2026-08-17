@@ -9,6 +9,7 @@ import { Star, Plus, Pencil, Trash2, X, Image as ImageIcon, Loader2 } from 'luci
 import { toast } from 'react-hot-toast'
 import { getTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from '@/app/actions/testimonials'
 import { uploadImage } from '@/app/actions/upload'
+import { compressImage, fileToBase64 } from '@/lib/compression'
 
 interface Testimonial {
   id: string
@@ -57,25 +58,21 @@ export default function AdminTestimonialsPage() {
   }, [])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'avatar' | 'proofImage') => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
     setUploading(true)
     try {
-      const reader = new FileReader()
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
+      const compressedFile = await compressImage(rawFile, 0.85, 1920)
+      const base64 = await fileToBase64(compressedFile)
       const result = await uploadImage(base64, 'testimonials')
       if (result.success && result.url) {
         setForm((f) => ({ ...f, [field]: result.url }))
-        toast.success(field === 'avatar' ? 'Avatar uploaded' : 'Photo uploaded')
+        toast.success(field === 'avatar' ? 'Avatar berhasil diunggah' : 'Foto berhasil diunggah')
       } else {
-        toast.error(result.error || 'Upload failed')
+        toast.error(result.error || 'Gagal mengunggah foto')
       }
     } catch {
-      toast.error('Upload failed')
+      toast.error('Gagal memproses gambar')
     } finally {
       setUploading(false)
     }

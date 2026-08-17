@@ -148,6 +148,15 @@ export const posts = pgTable("posts", {
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
 });
 
+export const featuredBrands = pgTable("featured_brands", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  brand: text("brand").notNull().unique(),
+  order: integer("order").default(0).notNull(),
+  active: boolean("active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
+});
+
 // RELATIONS
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),

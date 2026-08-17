@@ -11,7 +11,8 @@ import { Plus, Package, Trash2, Loader2, Image as ImageIcon, Pencil } from 'luci
 import { formatCurrency } from '@/lib/utils'
 import { getProducts, createProduct, deleteProduct, updateProduct } from '@/app/actions/products'
 import { uploadImage } from '@/app/actions/upload'
-import { SCENT_FAMILIES, GENDERS } from '@/lib/config'
+import { compressImage, fileToBase64 } from '@/lib/compression'
+import { SCENT_FAMILIES, GENDERS, BRANDS } from '@/lib/config'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
@@ -58,50 +59,42 @@ export default function ProductsPage() {
   }, [])
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
     setUploading(true)
     try {
-      const reader = new FileReader()
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
+      const compressedFile = await compressImage(rawFile, 0.85, 1920)
+      const base64 = await fileToBase64(compressedFile)
       const result = await uploadImage(base64, 'products')
       if (result.success && result.url) {
         setImageUrl(result.url)
-        toast.success('Image uploaded')
+        toast.success('Foto berhasil diunggah')
       } else {
-        toast.error(result.error || 'Upload failed')
+        toast.error(result.error || 'Gagal mengunggah foto')
       }
     } catch {
-      toast.error('Upload failed')
+      toast.error('Gagal memproses gambar')
     } finally {
       setUploading(false)
     }
   }
 
   async function handleExtraImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file || extraImages.length >= 4) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile || extraImages.length >= 4) return
     setUploading(true)
     try {
-      const reader = new FileReader()
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
+      const compressedFile = await compressImage(rawFile, 0.85, 1920)
+      const base64 = await fileToBase64(compressedFile)
       const result = await uploadImage(base64, 'products')
       if (result.success && result.url) {
         setExtraImages(prev => [...prev, result.url!])
-        toast.success('Image uploaded')
+        toast.success('Foto berhasil diunggah')
       } else {
-        toast.error(result.error || 'Upload failed')
+        toast.error(result.error || 'Gagal mengunggah foto')
       }
     } catch {
-      toast.error('Upload failed')
+      toast.error('Gagal memproses gambar')
     } finally {
       setUploading(false)
     }
@@ -239,7 +232,18 @@ export default function ProductsPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Brand</Label>
-                  <Input value={brand} onChange={e => setBrand(e.target.value)} placeholder="e.g. Dior, Chanel" className="bg-input border-border text-sm" />
+                  <Input
+                    list="brand-suggestions"
+                    value={brand}
+                    onChange={e => setBrand(e.target.value)}
+                    placeholder="e.g. Mykonos, Velixir, Afnan, Dior"
+                    className="bg-input border-border text-sm"
+                  />
+                  <datalist id="brand-suggestions">
+                    {BRANDS.map(b => (
+                      <option key={b} value={b} />
+                    ))}
+                  </datalist>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Scent Family *</Label>

@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { eq, desc } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { banners, products } from '@/db/schema'
-import { getSetting } from '@/app/actions/settings'
+import { getSetting, getGenderSlots } from '@/app/actions/settings'
 import { Header } from '@/components/layout/Header'
 import { MarqueeBar } from '@/components/home/MarqueeBar'
 import { BannerCarousel } from '@/components/home/BannerCarousel'
@@ -12,8 +12,10 @@ import { BlogSection } from '@/components/home/BlogSection'
 import { PopularSection } from '@/components/home/PopularSection'
 import { ScentCards } from '@/components/home/ScentCards'
 import { GenderSplit } from '@/components/home/GenderSplit'
+import { BrandShowcaseSlider } from '@/components/home/BrandShowcaseSlider'
 import { getActiveWars, checkExpiredWars, getScheduledWars } from '@/app/actions/wars'
 import { getPosts } from '@/app/actions/posts'
+import { getFeaturedBrands } from '@/app/actions/featured-brands'
 
 export const dynamic = 'force-dynamic'
 
@@ -36,6 +38,8 @@ export default async function Home() {
     scentFloral,
     scentWoody,
     scentAmber,
+    genderSlots,
+    featuredBrandsList,
   ] = await Promise.all([
     db.select().from(banners).where(eq(banners.active, true)).orderBy(desc(banners.order)),
     db.select().from(products).orderBy(desc(products.createdAt)).limit(50),
@@ -50,7 +54,42 @@ export default async function Home() {
     getSetting('scentFloral'),
     getSetting('scentWoody'),
     getSetting('scentAmber'),
+    getGenderSlots(),
+    getFeaturedBrands(),
   ])
+
+  // Resolve curated gender products
+  const resolveGenderProducts = async (ids: string[]) => {
+    if (ids.length === 0) return []
+    const results = await Promise.all(
+      ids.filter(Boolean).map(id =>
+        db.select().from(products).where(eq(products.id, id)).limit(1)
+      )
+    )
+    return results.map(r => r[0]).filter(Boolean)
+  }
+
+  const [curatedMen, curatedWomen, curatedUnisex] = await Promise.all([
+    resolveGenderProducts(genderSlots.Men),
+    resolveGenderProducts(genderSlots.Women),
+    resolveGenderProducts(genderSlots.Unisex),
+  ])
+
+  // Resolve featured brand products
+  const activeBrands = featuredBrandsList
+    .filter(b => b.active)
+    .sort((a, b) => a.order - b.order)
+
+  const brandProducts = await Promise.all(
+    activeBrands.map(async (fb) => {
+      const prods = await db
+        .select()
+        .from(products)
+        .where(eq(products.brand, fb.brand))
+        .orderBy(desc(products.createdAt))
+      return { brand: fb.brand, products: prods }
+    })
+  )
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -118,7 +157,13 @@ export default async function Home() {
         heroForHim={heroForHim}
         heroForHer={heroForHer}
         heroForEveryone={heroUnisex}
+        curatedMen={curatedMen}
+        curatedWomen={curatedWomen}
+        curatedUnisex={curatedUnisex}
       />
+
+      {/* Featured Brand Sliders */}
+      <BrandShowcaseSlider brands={brandProducts} />
 
 {/* Blog */}
       {latestPosts.length > 0 && (

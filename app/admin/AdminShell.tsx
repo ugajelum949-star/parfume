@@ -12,7 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { LayoutDashboard, Package, Settings, ArrowLeft, Menu, LogOut, ShoppingCart, CreditCard, Star, Image as ImageIcon, Swords, FileText } from 'lucide-react'
+import { LayoutDashboard, Package, Settings, ArrowLeft, Menu, LogOut, ShoppingCart, CreditCard, Star, Image as ImageIcon, Swords, FileText, Sparkles } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
 import { useStoreSettings } from '@/components/providers/StoreProvider'
 
@@ -22,6 +22,7 @@ const navItems = [
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/admin/wars', label: 'Wars', icon: Swords },
   { href: '/admin/banners', label: 'Banners', icon: ImageIcon },
+  { href: '/admin/featured-brands', label: 'Homepage', icon: Sparkles },
   { href: '/admin/blog', label: 'Blog', icon: FileText },
   { href: '/admin/testimonials', label: 'Reviews', icon: Star },
   { href: '/admin/payment-methods', label: 'Payments', icon: CreditCard },
