@@ -150,8 +150,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         {/* Client: upload + confirm */}
         <InvoiceClient
           orderId={order.id}
-          orderStatus={order.status}
-          customerPhone={order.customerPhone}
+          storeWhatsApp={s.whatsapp}
           confirmButtonType={s.confirmButtonType}
           storeTelegramUsername={s.telegramUsername}
           giftWrap={order.giftWrap}

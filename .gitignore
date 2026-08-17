@@ -36,17 +36,11 @@ pnpm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# obsidian
-docs/.obsidian/
-
 # ai config
 CLAUDE.md
 .cursorrules
 
 # deployment files
-docs/
 scripts/
 tests/
 .env.example
-.obsidianignore
-.obsidian/

@@ -8,8 +8,7 @@ import toast from 'react-hot-toast'
 
 interface InvoiceClientProps {
   orderId: string
-  orderStatus?: string
-  customerPhone?: string | null
+  storeWhatsApp?: string | null
   confirmButtonType?: string
   storeTelegramUsername?: string
   giftWrap?: boolean | null
@@ -18,8 +17,7 @@ interface InvoiceClientProps {
 
 export default function InvoiceClient({
   orderId,
-  orderStatus,
-  customerPhone,
+  storeWhatsApp,
   confirmButtonType = 'both',
   storeTelegramUsername,
   giftWrap,
@@ -60,8 +58,8 @@ export default function InvoiceClient({
     toast.success('Order ID disalin')
   }
 
-  const phone = customerPhone?.replace(/\D/g, '').replace(/^0/, '62') || ''
-  const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(`Konfirmasi pembayaran order ${orderId}`)}`
+  const phone = storeWhatsApp?.replace(/\D/g, '').replace(/^0/, '62') || ''
+  const waLink = phone ? `https://wa.me/${phone}?text=${encodeURIComponent(`Halo Admin, saya ingin konfirmasi pembayaran untuk Order ID: ${orderId}`)}` : ''
   const tgLink = storeTelegramUsername ? `https://t.me/${storeTelegramUsername.replace(/^@/, '')}` : ''
 
   return (

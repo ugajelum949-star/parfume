@@ -16,8 +16,8 @@ const rotations = ['-rotate-1', 'rotate-1', '-rotate-[0.5deg]']
 
 function TestimonialCard({ t, rotation }: { t: Testimonial; rotation: string }) {
   return (
-    <div className={`${rotation} group hover:!rotate-0 transition-transform duration-300 shrink-0 w-[260px] md:w-[300px]`}>
-      <div className="bg-card/80 backdrop-blur-sm border border-border rounded-2xl p-5 flex flex-col gap-3 hover:border-accent/30 transition-colors h-[220px]">
+    <div className={`${rotation} group hover:!rotate-0 transition-transform duration-300 shrink-0 w-[280px] md:w-[320px]`}>
+      <div className="bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-5 flex flex-col justify-between hover:border-accent/40 transition-all h-[310px] shadow-sm">
         <div className="flex items-center gap-3">
           {t.avatar ? (
             <img src={t.avatar} alt={t.name} className="w-9 h-9 rounded-full object-cover ring-2 ring-border" />
@@ -35,13 +35,21 @@ function TestimonialCard({ t, rotation }: { t: Testimonial; rotation: string }) 
             <span className="text-xs font-bold text-accent">{t.rating}</span>
           </div>
         </div>
-        <p className="text-sm text-muted-foreground leading-relaxed italic flex-1">
+
+        <p className="text-sm text-muted-foreground leading-relaxed italic line-clamp-2 my-1">
           &ldquo;{t.content}&rdquo;
         </p>
+
         {t.proofImage ? (
-          <img src={t.proofImage} alt="Bukti" className="w-full h-28 object-cover rounded-xl border border-border shrink-0" />
+          <div className="w-full h-36 md:h-40 rounded-xl overflow-hidden border border-border bg-black/20 shrink-0">
+            <img
+              src={t.proofImage}
+              alt="Bukti"
+              className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-300"
+            />
+          </div>
         ) : (
-          <div className="h-28" />
+          <div className="flex-1" />
         )}
       </div>
     </div>
