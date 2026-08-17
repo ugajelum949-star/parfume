@@ -16,7 +16,7 @@ export async function createTestimonial(formData: FormData) {
     const name = formData.get('name') as string
     const role = formData.get('role') as string
     const content = formData.get('content') as string
-    const rating = Number(formData.get('rating')) || 5
+    const rating = Math.min(5, Math.max(1, Math.round(Number(formData.get('rating')) || 5)))
     const avatar = formData.get('avatar') as string
     const proofImage = formData.get('proofImage') as string
 
@@ -36,7 +36,7 @@ export async function updateTestimonial(id: string, formData: FormData) {
     const name = formData.get('name') as string
     const role = formData.get('role') as string
     const content = formData.get('content') as string
-    const rating = Number(formData.get('rating')) || 5
+    const rating = Math.min(5, Math.max(1, Math.round(Number(formData.get('rating')) || 5)))
     const avatar = formData.get('avatar') as string
     const proofImage = formData.get('proofImage') as string
 

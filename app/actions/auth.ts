@@ -7,8 +7,23 @@ import { eq } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import { cookies, headers } from 'next/headers'
 import { rateLimit } from '@/lib/ratelimit'
+import crypto from 'crypto'
 
 const COOKIE_NAME = 'auth_session'
+const SECRET = process.env.SESSION_SECRET || 'parfume-session-secret-change-in-production'
+
+function signSession(userId: string): string {
+  const signature = crypto.createHmac('sha256', SECRET).update(userId).digest('hex')
+  return `${userId}.${signature}`
+}
+
+function verifySession(raw: string): string | null {
+  if (!raw || !raw.includes('.')) return null
+  const [userId, signature] = raw.split('.')
+  const expected = crypto.createHmac('sha256', SECRET).update(userId).digest('hex')
+  if (signature !== expected) return null
+  return userId
+}
 
 function isRedirectError(error: unknown) {
   return (error as { digest?: string })?.digest?.startsWith('NEXT_REDIRECT') || (error as { message?: string })?.message === 'NEXT_REDIRECT'
@@ -47,7 +62,7 @@ export async function login(prevState: { error?: string }, formData: FormData) {
     }
 
     const cookieStore = await cookies()
-    cookieStore.set(COOKIE_NAME, user.id, {
+    cookieStore.set(COOKIE_NAME, signSession(user.id), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -72,7 +87,8 @@ export async function logout() {
 export async function verifyAdmin() {
   try {
     const cookieStore = await cookies()
-    const userId = cookieStore.get(COOKIE_NAME)?.value
+    const raw = cookieStore.get(COOKIE_NAME)?.value
+    const userId = verifySession(raw || '')
 
     if (!userId) {
       redirect('/login')

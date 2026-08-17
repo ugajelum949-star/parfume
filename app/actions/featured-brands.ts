@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
-import { featuredBrands, products } from '@/db/schema'
+import { featuredBrands, products, settings } from '@/db/schema'
 import { eq, asc, count, desc } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { verifyAdmin } from './auth'
@@ -112,9 +112,35 @@ export async function toggleFeaturedBrand(id: string, active: boolean) {
   }
 
   try {
+    // Get brand name before toggling
+    const [brandRow] = await db.select().from(featuredBrands).where(eq(featuredBrands.id, id)).limit(1)
+
     await db.update(featuredBrands)
       .set({ active })
       .where(eq(featuredBrands.id, id))
+
+    // When deactivating, clean gender slots that reference this brand's products
+    if (!active && brandRow) {
+      const brandProds = await db.select({ id: products.id }).from(products).where(eq(products.brand, brandRow.brand))
+      const brandIds = new Set(brandProds.map(p => p.id))
+      const raw = await db.select().from(settings).where(eq(settings.key, 'gender_curated_slots')).limit(1)
+      if (raw[0]?.value) {
+        try {
+          const slots = JSON.parse(raw[0].value)
+          let changed = false
+          for (const key of ['Men', 'Women', 'Unisex'] as const) {
+            if (Array.isArray(slots[key])) {
+              const filtered = slots[key].filter((pid: string) => !brandIds.has(pid))
+              if (filtered.length !== slots[key].length) { slots[key] = filtered; changed = true }
+            }
+          }
+          if (changed) {
+            await db.insert(settings).values({ key: 'gender_curated_slots', value: JSON.stringify(slots) })
+              .onConflictDoUpdate({ target: settings.key, set: { value: JSON.stringify(slots) } })
+          }
+        } catch {}
+      }
+    }
 
     revalidatePath('/')
     revalidatePath('/admin/featured-brands')

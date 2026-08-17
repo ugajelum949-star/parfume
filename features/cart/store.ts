@@ -53,7 +53,8 @@ export const useCartStore = create<CartState>()(
       })),
 
       updateQuantity: (id, size, quantity) => set((state) => {
-        if (quantity <= 0) {
+        const cappedQuantity = Math.min(quantity, 99)
+        if (cappedQuantity <= 0) {
           return {
             items: state.items.filter(
               (item) => !(item.id === id && item.size === size)
@@ -63,7 +64,7 @@ export const useCartStore = create<CartState>()(
         return {
           items: state.items.map((item) => {
             if (item.id === id && item.size === size) {
-              return { ...item, quantity }
+              return { ...item, quantity: cappedQuantity }
             }
             return item
           })

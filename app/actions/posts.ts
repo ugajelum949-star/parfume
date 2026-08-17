@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db'
 import { posts } from '@/db/schema'
-import { eq, desc, and } from 'drizzle-orm'
+import { eq, desc, and, ne } from 'drizzle-orm'
 import { verifyAdmin } from '@/app/actions/auth'
 import { revalidatePath } from 'next/cache'
 
@@ -50,6 +50,9 @@ export async function createPost(formData: FormData) {
       }
     }
 
+    if (content.length > 50000) return { success: false, error: 'Konten maksimal 50000 karakter' }
+    if (title.length > 200) return { success: false, error: 'Judul maksimal 200 karakter' }
+
     await db.insert(posts).values({
       title,
       slug,
@@ -80,6 +83,16 @@ export async function updatePost(id: string, formData: FormData) {
     const category = formData.get('category') as string
     const tags = formData.get('tags') as string
     const published = formData.get('published') === 'true'
+
+    if (slug) {
+      const existing = await db.select().from(posts).where(and(eq(posts.slug, slug), ne(posts.id, id))).limit(1)
+      if (existing.length > 0) {
+        return { success: false, error: 'Slug sudah digunakan oleh postingan lain' }
+      }
+    }
+
+    if (content.length > 50000) return { success: false, error: 'Konten maksimal 50000 karakter' }
+    if (title.length > 200) return { success: false, error: 'Judul maksimal 200 karakter' }
 
     await db.update(posts).set({
       title,

@@ -199,6 +199,7 @@ export default function AdminBlogPage() {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   rows={10}
+                  maxLength={50000}
                   placeholder="Write your article content in Markdown..."
                   className="w-full bg-input border border-border rounded-lg px-3 py-2 text-sm text-foreground resize-y font-mono"
                 />
@@ -232,7 +233,10 @@ export default function AdminBlogPage() {
                   type="checkbox"
                   id="published"
                   checked={published}
-                  onChange={(e) => setPublished(e.target.checked)}
+                  onChange={(e) => {
+                    if (e.target.checked && !confirm('Publikasikan artikel ini?')) return
+                    setPublished(e.target.checked)
+                  }}
                   className="accent-gold"
                 />
                 <Label htmlFor="published" className="text-sm">Published</Label>

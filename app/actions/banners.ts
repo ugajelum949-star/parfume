@@ -18,7 +18,7 @@ export async function createBanner(formData: FormData) {
     const image = formData.get('image') as string
     const link = (formData.get('link') as string || '').trim()
     const active = formData.get('active') === 'true'
-    const order = parseInt(formData.get('order') as string) || 0
+    const order = Math.max(0, parseInt(formData.get('order') as string) || 0)
 
     if (!image) return { success: false, error: 'Image is required.' }
 
@@ -39,7 +39,7 @@ export async function updateBanner(id: string, formData: FormData) {
     const image = formData.get('image') as string
     const link = (formData.get('link') as string || '').trim()
     const active = formData.get('active') === 'true'
-    const order = parseInt(formData.get('order') as string) || 0
+    const order = Math.max(0, parseInt(formData.get('order') as string) || 0)
 
     await db.update(banners).set({
       title: title || null, image, link: link || null, active, order,

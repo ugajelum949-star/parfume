@@ -92,7 +92,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         <Card className="bg-card border-border">
           <CardHeader><CardTitle className="text-sm">Update Status</CardTitle></CardHeader>
           <CardContent>
-            <OrderStatusUpdater orderId={order.id} currentStatus={order.status} />
+            <OrderStatusUpdater orderId={order.id} currentStatus={order.status} orderUpdatedAt={order.updatedAt?.toISOString()} />
           </CardContent>
         </Card>
 

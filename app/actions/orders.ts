@@ -2,13 +2,13 @@
 
 import { db } from '@/lib/db'
 import { orders, orderItems, paymentMethods, products, warItems, settings } from '@/db/schema'
-import { eq, desc, sql, and } from 'drizzle-orm'
+import { eq, desc, sql, and, gte } from 'drizzle-orm'
 import { calculateOrderTotal, type ZoneId } from '@/lib/shipping'
 import { getSizePrice } from '@/lib/price'
 import { verifyAdmin } from './auth'
 import { revalidatePath } from 'next/cache'
 
-const ALLOWED_STATUSES = ['PENDING', 'PAID', 'PROCESSING', 'SHIPPED', 'COMPLETED'] as const
+const ALLOWED_STATUSES = ['PENDING', 'PROOF_UPLOADED', 'PAID', 'PROCESSING', 'SHIPPED', 'COMPLETED'] as const
 const ALLOWED_SHIPPING_SERVICES = ['reguler', 'instant', 'next_day'] as const
 
 export async function createOrder(data: {
@@ -21,14 +21,45 @@ export async function createOrder(data: {
   paymentMethodId: string
   giftWrap?: boolean
   giftWrapNote?: string
+  ipAddress?: string
 }) {
   try {
     // Validate inputs
+    if (!data.items || data.items.length === 0 || data.items.length > 20) {
+      return { success: false, error: 'Jumlah item tidak valid (maksimal 20)' }
+    }
+
+    const VALID_ZONES = ['jabodetabek', 'jawa', 'sumatera', 'kalimantan', 'sulawesi', 'bali-nusatenggara', 'maluku', 'papua']
+    if (!VALID_ZONES.includes(data.shippingZone)) {
+      return { success: false, error: 'Zona pengiriman tidak valid' }
+    }
+
     if (!ALLOWED_SHIPPING_SERVICES.includes(data.shippingService as typeof ALLOWED_SHIPPING_SERVICES[number])) {
       return { success: false, error: 'Invalid shipping service' }
     }
 
-    const [paymentMethod] = await db.select().from(paymentMethods).where(eq(paymentMethods.id, data.paymentMethodId))
+    // War order limit: only enforced when order contains war items
+    const hasWarItems = data.items.some(i => i.source === 'war')
+    if (hasWarItems) {
+      const clientIp = data.ipAddress || 'unknown'
+      if (clientIp !== 'unknown') {
+        // Get configurable limit from settings (default: 2)
+        const limitRaw = await db.select().from(settings).where(eq(settings.key, 'war_max_orders_per_ip')).limit(1)
+        const maxOrders = Number(limitRaw[0]?.value) || 2
+
+        const recentWarOrders = await db.select({ id: orders.id }).from(orders).where(
+          and(
+            eq(orders.ipAddress, clientIp),
+            gte(orders.createdAt, new Date(Date.now() - 24 * 60 * 60 * 1000))
+          )
+        ).limit(maxOrders + 1)
+        if (recentWarOrders.length >= maxOrders) {
+          return { success: false, error: `Batas pemesanan war tercapai (maks ${maxOrders} pesanan/24 jam per IP).` }
+        }
+      }
+    }
+
+    const [paymentMethod] = await db.select().from(paymentMethods).where(and(eq(paymentMethods.id, data.paymentMethodId), eq(paymentMethods.isActive, true)))
     if (!paymentMethod) return { success: false, error: 'Payment method not found' }
 
     // Split items into normal and war
@@ -187,18 +218,28 @@ export async function getActivePaymentMethods() {
   }
 }
 
-export async function updateOrderStatus(orderId: string, status: string) {
+export async function updateOrderStatus(orderId: string, status: string, orderUpdatedAt?: string) {
   try {
     await verifyAdmin()
     if (!ALLOWED_STATUSES.includes(status as typeof ALLOWED_STATUSES[number])) {
       return { success: false, error: 'Invalid status' }
     }
+
+    // Optimistic lock: reject if another admin modified the order since page load
+    if (orderUpdatedAt) {
+      const [current] = await db.select({ updatedAt: orders.updatedAt }).from(orders).where(eq(orders.id, orderId)).limit(1)
+      if (!current) return { success: false, error: 'Order not found' }
+      if (current.updatedAt && new Date(current.updatedAt).getTime() !== new Date(orderUpdatedAt).getTime()) {
+        return { success: false, error: 'Order sudah diubah oleh admin lain. Silakan refresh halaman.' }
+      }
+    }
+
     await db.update(orders).set({ status }).where(eq(orders.id, orderId))
     revalidatePath('/admin/orders')
     revalidatePath(`/admin/orders/${orderId}`)
     return { success: true }
   } catch (error) {
     console.error('Error updating order status:', error)
-    return { success: false }
+    return { success: false, error: 'Gagal mengupdate status' }
   }
 }

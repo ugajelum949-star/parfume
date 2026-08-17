@@ -1,3 +1,6 @@
+// ponytail: IP-based rate limiting needs headers() access.
+// Current implementation uses a static key; upgrade when IP extraction is available.
+
 type RateLimitRecord = {
   count: number
   resetTime: number

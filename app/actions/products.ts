@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache'
 
 export async function getProducts() {
   try {
+    await verifyAdmin()
     return await db.select().from(products).orderBy(desc(products.createdAt))
   } catch (error) {
     console.error('Error fetching products:', error)
@@ -18,6 +19,7 @@ export async function getProducts() {
 
 export async function getProductWithImages(id: string) {
   try {
+    await verifyAdmin()
     const [product] = await db.select().from(products).where(eq(products.id, id)).limit(1)
     if (!product) return null
     const images = await db.select().from(productImages).where(eq(productImages.productId, id)).orderBy(productImages.order)
@@ -52,6 +54,13 @@ export async function createProduct(formData: FormData) {
     if (!name || !category || isNaN(price)) {
       return { success: false, error: 'Name, category, and price are required.' }
     }
+
+    if (name.length > 200) return { success: false, error: 'Nama produk maksimal 200 karakter' }
+    if (description && description.length > 5000) return { success: false, error: 'Deskripsi maksimal 5000 karakter' }
+    if (brand.length > 100) return { success: false, error: 'Brand maksimal 100 karakter' }
+
+    if (price < 0) return { success: false, error: 'Harga tidak boleh negatif' }
+    if (stock < 0) return { success: false, error: 'Stok tidak boleh negatif' }
 
     const [newProduct] = await db.insert(products).values({
       name,
@@ -141,6 +150,13 @@ export async function updateProduct(id: string, formData: FormData) {
       return { success: false, error: 'Name, category, and price are required.' }
     }
 
+    if (name.length > 200) return { success: false, error: 'Nama produk maksimal 200 karakter' }
+    if (description && description.length > 5000) return { success: false, error: 'Deskripsi maksimal 5000 karakter' }
+    if (brand.length > 100) return { success: false, error: 'Brand maksimal 100 karakter' }
+
+    if (price < 0) return { success: false, error: 'Harga tidak boleh negatif' }
+    if (stock < 0) return { success: false, error: 'Stok tidak boleh negatif' }
+
     await db.update(products).set({
       name,
       category,
@@ -156,12 +172,24 @@ export async function updateProduct(id: string, formData: FormData) {
       stockData: JSON.stringify({ prices: sizePrices, salePrices: sizeSalePrices }),
     }).where(eq(products.id, id))
 
-    // Replace additional images
+    // Diff additional images: only delete S3 files for images that are truly removed
+    const oldImages = await db.select().from(productImages).where(eq(productImages.productId, id)).orderBy(productImages.order)
+    const oldUrls = new Set(oldImages.map(img => img.url))
+    const newValidImages = images.filter(url => url && url.trim() !== '')
+    const newUrls = new Set(newValidImages)
+
+    // Delete S3 files for images no longer referenced
+    for (const img of oldImages) {
+      if (!newUrls.has(img.url)) {
+        await deleteFromS3(img.url)
+      }
+    }
+
+    // Replace DB records
     await db.delete(productImages).where(eq(productImages.productId, id))
-    const validImages = images.filter(url => url && url.trim() !== '')
-    if (validImages.length > 0) {
+    if (newValidImages.length > 0) {
       await db.insert(productImages).values(
-        validImages.map((url, i) => ({
+        newValidImages.map((url, i) => ({
           url,
           productId: id,
           order: i,

@@ -4,13 +4,14 @@ import { orders, orderItems, products, paymentMethods, settings } from '@/db/sch
 import { eq } from 'drizzle-orm'
 import { formatCurrency } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle, CreditCard, Package, Truck, ShoppingCart } from 'lucide-react'
+import { CheckCircle, CreditCard, File, Package, Truck, ShoppingCart } from 'lucide-react'
 import InvoiceClient from './InvoiceClient'
 
 export const dynamic = 'force-dynamic'
 
 const STEPS = [
   { key: 'CREATED', label: 'Order Dibuat', icon: ShoppingCart },
+  { key: 'PROOF_UPLOADED', label: 'Bukti Diterima', icon: File },
   { key: 'PAYMENT', label: 'Pembayaran', icon: CreditCard },
   { key: 'PROCESSING', label: 'Diproses', icon: Package },
   { key: 'SHIPPED', label: 'Dikirim', icon: Truck },
@@ -20,10 +21,11 @@ const STEPS = [
 function stepIndex(status: string) {
   const map: Record<string, number> = {
     PENDING: 1,
-    PAID: 2,
-    PROCESSING: 3,
-    SHIPPED: 4,
-    COMPLETED: 5,
+    PROOF_UPLOADED: 2,
+    PAID: 3,
+    PROCESSING: 4,
+    SHIPPED: 5,
+    COMPLETED: 6,
   }
   return map[status] ?? 0
 }

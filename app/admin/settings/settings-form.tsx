@@ -73,6 +73,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (!confirm('Simpan semua perubahan settings?')) return
     const form = e.currentTarget
     const fd = new FormData(form)
     fd.set('floatingButtonEnabled', floatingEnabled ? 'true' : 'false')
@@ -196,6 +197,13 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
             </Label>
             <Input id="giftWrapPrice" name="giftWrapPrice" type="number" defaultValue={initial.giftWrapPrice || '15000'} className={inputClass} />
             <p className="text-xs text-muted-foreground">Biaya tambahan untuk gift wrapping. Default: Rp 15.000.</p>
+          </div>
+          <div>
+            <Label htmlFor="warMaxOrdersPerIp" className="text-sm font-medium">
+              Batas Order War per IP (24 jam)
+            </Label>
+            <Input id="warMaxOrdersPerIp" name="war_max_orders_per_ip" type="number" min="1" defaultValue={initial.war_max_orders_per_ip || '2'} className={inputClass} />
+            <p className="text-xs text-muted-foreground">Maksimal pesanan war per IP dalam 24 jam. Default: 2. Nonaktifkan dengan 0.</p>
           </div>
         </CardContent>
       </Card>

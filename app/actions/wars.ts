@@ -53,6 +53,11 @@ export async function createWar(data: {
       return { success: false, error: 'End time must be after start time' }
     }
 
+    for (const item of data.items) {
+      if (item.price <= 0) return { success: false, error: `Harga ${item.name} harus lebih dari 0` }
+      if (item.stock <= 0) return { success: false, error: `Stok ${item.name} harus lebih dari 0` }
+    }
+
     const [war] = await db.insert(wars).values({
       name: data.name,
       description: data.description || null,
@@ -90,9 +95,18 @@ export async function createWar(data: {
 export async function deleteWar(id: string) {
   await verifyAdmin()
 
+  // Fetch war to check if it's live
+  const [war] = await db.select().from(wars).where(eq(wars.id, id)).limit(1)
+  if (!war) return { success: false, error: 'War not found' }
+
+  // Block delete if war is currently live
+  const now = new Date()
+  if (war.active && !war.converted && war.startTime <= now && war.endTime >= now) {
+    return { success: false, error: 'Tidak bisa menghapus war yang sedang berlangsung. Tunggu war selesai atau nonaktifkan terlebih dahulu.' }
+  }
+
   // Fetch war items to get image URLs before deleting
   const items = await db.select().from(warItems).where(eq(warItems.warId, id))
-  const [war] = await db.select().from(wars).where(eq(wars.id, id)).limit(1)
 
   // Delete files from S3
   if (war?.image) await deleteFromS3(war.image)
@@ -162,6 +176,7 @@ export async function checkExpiredWars() {
     and(eq(wars.active, true), eq(wars.converted, false), lte(wars.endTime, now))
   )
   for (const war of expired) {
+    console.log(`[Wars] Auto-converting expired war: ${war.name} (${war.id})`)
     await convertWarToProductsInternal(war.id)
   }
 }

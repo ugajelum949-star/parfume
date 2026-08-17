@@ -143,6 +143,8 @@ export async function updateSettingsFromForm(formData: FormData) {
       ['promo_qty_mega', (formData.get('promo_qty_mega') as string || '5').trim()],
       // Gift wrap
       ['giftWrapPrice', (formData.get('giftWrapPrice') as string || '15000').trim()],
+      // War limit
+      ['war_max_orders_per_ip', (formData.get('war_max_orders_per_ip') as string || '2').trim()],
       // Homepage images
       ['heroImage', (formData.get('heroImage') as string || '').trim()],
       ['heroForHim', (formData.get('heroForHim') as string || '').trim()],
@@ -153,6 +155,13 @@ export async function updateSettingsFromForm(formData: FormData) {
       ['scentWoody', (formData.get('scentWoody') as string || '').trim()],
       ['scentAmber', (formData.get('scentAmber') as string || '').trim()],
     ]
+
+    const numericKeys = ['shipping_free_threshold', 'shipping_customization_fee', 'shipping_transfer_discount', 'shipping_instant_price', 'shipping_nextday_surcharge', 'promo_qty_bundle', 'promo_qty_mega', 'giftWrapPrice', 'war_max_orders_per_ip']
+    for (const [key, value] of entries) {
+      if (numericKeys.includes(key) && value !== '' && isNaN(Number(value))) {
+        return { success: false, error: `Nilai ${key} harus berupa angka` }
+      }
+    }
 
     for (const [key, value] of entries) {
       await db

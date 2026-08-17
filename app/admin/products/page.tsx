@@ -191,7 +191,7 @@ export default function ProductsPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Delete this product?')) return
+    if (!confirm('Hapus produk ini secara PERMANEN? Semua gambar juga akan dihapus dari server.')) return
     const result = await deleteProduct(id)
     if (result.success) {
       toast.success('Deleted')
@@ -230,7 +230,7 @@ export default function ProductsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Name *</Label>
-                  <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sauvage" required className="bg-input border-border text-sm" />
+                  <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sauvage" required maxLength={200} className="bg-input border-border text-sm" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Brand</Label>
@@ -239,6 +239,7 @@ export default function ProductsPage() {
                     value={brand}
                     onChange={e => setBrand(e.target.value)}
                     placeholder="e.g. Mykonos, Velixir, Afnan, Dior"
+                    maxLength={100}
                     className="bg-input border-border text-sm"
                   />
                   <datalist id="brand-suggestions">
@@ -261,7 +262,7 @@ export default function ProductsPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Stock</Label>
-                  <Input type="number" value={stock} onChange={e => setStock(e.target.value)} className="bg-input border-border text-sm" />
+                  <Input type="number" min="0" value={stock} onChange={e => setStock(e.target.value)} className="bg-input border-border text-sm" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Sizes (comma separated)</Label>
@@ -274,7 +275,7 @@ export default function ProductsPage() {
                       if (size && !newPrices[size]) newPrices[size] = ''
                     })
                     setSizePrices(newPrices)
-                  }} placeholder="100ml,150ml" className="bg-input border-border text-sm" />
+                  }} placeholder="100ml,150ml" maxLength={500} className="bg-input border-border text-sm" />
                 </div>
                 {/* Per-size prices in a compact grid */}
                 {sizes.split(',').filter(s => s.trim()).map(s => s.trim()).filter((v, i, a) => a.indexOf(v) === i).length > 0 && (
@@ -284,8 +285,8 @@ export default function ProductsPage() {
                       {sizes.split(',').filter(s => s.trim()).map(s => s.trim()).filter((v, i, a) => a.indexOf(v) === i).map(size => (
                         <div key={size} className="flex items-center gap-2">
                           <span className="text-xs text-muted-foreground w-14 shrink-0">{size}</span>
-                          <Input type="number" value={sizePrices[size] || ''} onChange={e => setSizePrices(prev => ({ ...prev, [size]: e.target.value }))} placeholder="Harga" className="bg-input border-border text-sm" />
-                          <Input type="number" value={sizeSalePrices[size] || ''} onChange={e => setSizeSalePrices(prev => ({ ...prev, [size]: e.target.value }))} placeholder="Diskon" className="bg-input border-border text-sm" />
+                          <Input type="number" min="0" value={sizePrices[size] || ''} onChange={e => setSizePrices(prev => ({ ...prev, [size]: e.target.value }))} placeholder="Harga" className="bg-input border-border text-sm" />
+                          <Input type="number" min="0" value={sizeSalePrices[size] || ''} onChange={e => setSizeSalePrices(prev => ({ ...prev, [size]: e.target.value }))} placeholder="Diskon" className="bg-input border-border text-sm" />
                         </div>
                       ))}
                     </div>
@@ -325,7 +326,7 @@ export default function ProductsPage() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Description</Label>
-                <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} className="w-full bg-input border border-border rounded-lg px-3 py-2 text-sm text-foreground resize-none" placeholder="Fragrance description..." />
+                <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} maxLength={5000} className="w-full bg-input border border-border rounded-lg px-3 py-2 text-sm text-foreground resize-none" placeholder="Fragrance description..." />
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">

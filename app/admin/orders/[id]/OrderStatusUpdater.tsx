@@ -4,28 +4,29 @@ import { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { updateOrderStatus } from '@/app/actions/orders'
 
-const statuses = ['PENDING', 'PAID', 'PROCESSING', 'SHIPPED', 'COMPLETED'] as const
+const statuses = ['PENDING', 'PROOF_UPLOADED', 'PAID', 'PROCESSING', 'SHIPPED', 'COMPLETED'] as const
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   PENDING: { label: 'Menunggu Bayar', color: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30' },
+  PROOF_UPLOADED: { label: 'Bukti Diterima', color: 'bg-orange-500/10 text-orange-500 border-orange-500/30' },
   PAID: { label: 'Sudah Bayar', color: 'bg-blue-500/10 text-blue-500 border-blue-500/30' },
   PROCESSING: { label: 'Diproses', color: 'bg-purple-500/10 text-purple-500 border-purple-500/30' },
   SHIPPED: { label: 'Dikirim', color: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/30' },
   COMPLETED: { label: 'Selesai', color: 'bg-green-500/10 text-green-500 border-green-500/30' },
 }
 
-export function OrderStatusUpdater({ orderId, currentStatus }: { orderId: string; currentStatus: string }) {
+export function OrderStatusUpdater({ orderId, currentStatus, orderUpdatedAt }: { orderId: string; currentStatus: string; orderUpdatedAt?: string }) {
   const [status, setStatus] = useState(currentStatus)
   const [saving, setSaving] = useState(false)
 
   const handleUpdate = async (newStatus: string) => {
     setSaving(true)
-    const result = await updateOrderStatus(orderId, newStatus)
+    const result = await updateOrderStatus(orderId, newStatus, orderUpdatedAt)
     if (result.success) {
       setStatus(newStatus)
       toast.success('Status updated')
     } else {
-      toast.error('Failed to update')
+      toast.error(result.error || 'Failed to update')
     }
     setSaving(false)
   }

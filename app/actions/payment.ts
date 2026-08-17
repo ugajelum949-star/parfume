@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
-import { paymentMethods } from '@/db/schema'
+import { paymentMethods, orders } from '@/db/schema'
 import { eq, desc } from 'drizzle-orm'
 import { verifyAdmin } from './auth'
 import { deleteFromS3, uploadToS3 } from '@/lib/s3-storage'
@@ -75,6 +75,12 @@ export async function savePaymentMethod(
 
 export async function deletePaymentMethod(id: string) {
   await verifyAdmin()
+
+  // Check if any orders reference this payment method
+  const [existingOrder] = await db.select().from(orders).where(eq(orders.paymentMethodId, id)).limit(1)
+  if (existingOrder) {
+    return { success: false, error: 'Metode pembayaran ini masih digunakan oleh order. Nonaktifkan saja.' }
+  }
 
   // Clean up S3 image if exists
   const [method] = await db

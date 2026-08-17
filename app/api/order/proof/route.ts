@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { orders, settings } from '@/db/schema'
+import { orders, settings, paymentMethods } from '@/db/schema'
 import { eq } from 'drizzle-orm'
-import { sendTelegramPhoto } from '@/lib/telegram'
+import { sendPaymentProofWithActions } from '@/lib/telegram'
 import { rateLimit } from '@/lib/ratelimit'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
@@ -54,21 +54,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Order already processed' }, { status: 400 })
     }
 
-    // Update order status to PAID (admin verifies manually → PROCESSING)
+    // Update order status to PROOF_UPLOADED (admin reviews via Telegram bot)
     await db
       .update(orders)
-      .set({ status: 'PAID', updatedAt: new Date() })
+      .set({ status: 'PROOF_UPLOADED', updatedAt: new Date() })
       .where(eq(orders.id, orderId))
 
-    // Fire-and-forget: send proof to Telegram
+    // Send to Telegram with approve/reject buttons
     const allSettings = await db.select().from(settings)
     const s = Object.fromEntries(allSettings.map(r => [r.key, r.value]))
     if (s.telegramBotToken && s.telegramChatId) {
       const buffer = Buffer.from(await file.arrayBuffer())
-      const caption = `Bukti Pembayaran\nOrder: ${orderId}\nCustomer: ${existingOrder.customerName || '-'}\nTotal: Rp ${existingOrder.total.toLocaleString('id-ID')}`
-      sendTelegramPhoto(s.telegramBotToken, s.telegramChatId, buffer, caption).catch(err => {
-        console.error('[proof] Telegram photo failed:', err)
-      })
+      let paymentMethodLabel = '-'
+      if (existingOrder.paymentMethodId) {
+        const [pm] = await db.select().from(paymentMethods).where(eq(paymentMethods.id, existingOrder.paymentMethodId)).limit(1)
+        paymentMethodLabel = pm?.label || '-'
+      }
+      sendPaymentProofWithActions(s.telegramBotToken, s.telegramChatId, buffer, orderId, {
+        customerName: existingOrder.customerName || '-',
+        customerPhone: existingOrder.customerPhone || '-',
+        total: existingOrder.total,
+        paymentMethod: paymentMethodLabel,
+      }).catch(err => console.error('[proof] Telegram failed:', err))
     }
 
     return NextResponse.json({ success: true })

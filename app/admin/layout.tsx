@@ -3,9 +3,19 @@ import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 import { users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import crypto from 'crypto'
 import AdminShell from './AdminShell'
 
 const COOKIE_NAME = 'auth_session'
+const SECRET = process.env.SESSION_SECRET || 'parfume-session-secret-change-in-production'
+
+function verifySession(raw: string): string | null {
+  if (!raw || !raw.includes('.')) return null
+  const [userId, signature] = raw.split('.')
+  const expected = crypto.createHmac('sha256', SECRET).update(userId).digest('hex')
+  if (signature !== expected) return null
+  return userId
+}
 
 export default async function AdminLayout({
   children,
@@ -13,7 +23,8 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   const cookieStore = await cookies()
-  const userId = cookieStore.get(COOKIE_NAME)?.value
+  const raw = cookieStore.get(COOKIE_NAME)?.value
+  const userId = verifySession(raw || '')
 
   if (!userId) {
     redirect('/login')

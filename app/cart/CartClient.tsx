@@ -114,6 +114,7 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
   const finalTotal = orderCalc.total + giftWrapCost
 
   const handleCheckout = async () => {
+    if (!confirm('Buat pesanan ini? Total akan dikonfirmasi oleh admin.')) return
     if (!customerName.trim()) { toast.error('Mohon isi nama lengkap'); return }
     if (!customerPhone.trim()) { toast.error('Mohon isi nomor WhatsApp'); return }
     if (!customerAddress.trim()) { toast.error('Mohon isi alamat lengkap'); return }
@@ -207,21 +208,21 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Nama Lengkap *</Label>
-                    <Input value={customerName} onChange={e => setCustomerName(e.target.value)} placeholder="Budi Santoso" className="bg-input border-border text-sm h-11" />
+                    <Input value={customerName} onChange={e => setCustomerName(e.target.value)} placeholder="Budi Santoso" maxLength={100} className="bg-input border-border text-sm h-11" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">No. WhatsApp *</Label>
-                    <Input type="tel" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} placeholder="0812xxxx (Wajib Aktif)" className="bg-input border-border text-sm h-11" />
+                    <Input type="tel" pattern="[0-9+]*" maxLength={15} value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} placeholder="0812xxxx (Wajib Aktif)" className="bg-input border-border text-sm h-11" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Alamat Lengkap *</Label>
-                  <textarea value={customerAddress} onChange={e => setCustomerAddress(e.target.value)} rows={2} placeholder="Nama Jalan, No. Rumah, RT/RW, Kelurahan, Kecamatan" className="w-full bg-input border border-border rounded-lg px-3 py-2 text-sm text-foreground resize-none min-h-[80px]" />
+                  <textarea value={customerAddress} onChange={e => setCustomerAddress(e.target.value)} rows={2} maxLength={500} placeholder="Nama Jalan, No. Rumah, RT/RW, Kelurahan, Kecamatan" className="w-full bg-input border border-border rounded-lg px-3 py-2 text-sm text-foreground resize-none min-h-[80px]" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Kota/Kabupaten *</Label>
-                    <Input value={customerCity} onChange={e => setCustomerCity(e.target.value)} placeholder="Jakarta Selatan" className="bg-input border-border text-sm h-11" />
+                    <Input value={customerCity} onChange={e => setCustomerCity(e.target.value)} placeholder="Jakarta Selatan" maxLength={100} className="bg-input border-border text-sm h-11" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Kode Pos *</Label>
@@ -421,6 +422,7 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
                   <span>Total</span>
                   <span className="text-gold">{formatCurrency(finalTotal)}</span>
                 </div>
+                <p className="text-[10px] text-muted-foreground mt-1">*Harga akan diverifikasi ulang oleh admin saat diproses</p>
                 <Button onClick={handleCheckout} disabled={isLoading || isSulawesi} className="w-full hidden lg:flex py-6 text-base font-bold rounded-xl mt-5 bg-accent hover:bg-accent-hover text-white">
                   {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Bayar Sekarang'}
                 </Button>

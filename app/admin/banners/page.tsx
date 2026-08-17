@@ -117,6 +117,7 @@ export default function AdminBannersPage() {
   }
 
   const handleToggle = async (id: string, active: boolean) => {
+    if (!confirm(active ? 'Aktifkan banner ini?' : 'Nonaktifkan banner ini?')) return
     await toggleBanner(id, active)
     await load()
   }
@@ -153,7 +154,7 @@ export default function AdminBannersPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Order</Label>
-                  <Input type="number" value={form.order} onChange={e => setForm(f => ({ ...f, order: e.target.value }))} />
+                  <Input type="number" min="0" value={form.order} onChange={e => setForm(f => ({ ...f, order: e.target.value }))} />
                 </div>
                 <div className="flex items-center gap-2 pt-6">
                   <input type="checkbox" id="active" checked={form.active} onChange={e => setForm(f => ({ ...f, active: e.target.checked }))} className="accent-gold" />
