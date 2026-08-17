@@ -17,6 +17,16 @@ export async function getProducts() {
   }
 }
 
+/** Public version — no auth required, for storefront */
+export async function getPublicProducts() {
+  try {
+    return await db.select().from(products).orderBy(desc(products.createdAt))
+  } catch (error) {
+    console.error('Error fetching products:', error)
+    return []
+  }
+}
+
 export async function getProductWithImages(id: string) {
   try {
     await verifyAdmin()

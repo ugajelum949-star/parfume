@@ -16,7 +16,7 @@ import { getSizePrice, getFirstSizePrice, getPostWarPrice } from '@/lib/price'
 import { useCartStore } from '@/features/cart/store'
 import { useWishlistStore } from '@/features/wishlist/store'
 import { useCompareStore } from '@/features/compare/store'
-import { getProducts } from '@/app/actions/products'
+import { getPublicProducts } from '@/app/actions/products'
 import { SCENT_FAMILIES } from '@/lib/config'
 
 type Product = {
@@ -56,7 +56,7 @@ function ProductsContent() {
   const [activeBrand, setActiveBrand] = useState<string>('All')
 
   useEffect(() => {
-    getProducts().then((data) => { setProducts(data as Product[]); setLoading(false) })
+    getPublicProducts().then((data) => { setProducts(data as Product[]); setLoading(false) })
   }, [])
 
   const handleAdd = (e: React.MouseEvent, product: Product) => {
