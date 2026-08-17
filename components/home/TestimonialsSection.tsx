@@ -1,6 +1,7 @@
 'use client'
 
 import { Star } from 'lucide-react'
+import { getImageSrc } from '@/lib/image-proxy'
 
 interface Testimonial {
   id: string
@@ -20,7 +21,7 @@ function TestimonialCard({ t, rotation }: { t: Testimonial; rotation: string }) 
       <div className="bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-5 flex flex-col justify-between hover:border-accent/40 transition-all h-[310px] shadow-sm">
         <div className="flex items-center gap-3">
           {t.avatar ? (
-            <img src={t.avatar} alt={t.name} className="w-9 h-9 rounded-full object-cover ring-2 ring-border" />
+            <img src={getImageSrc(t.avatar)} alt={t.name} className="w-9 h-9 rounded-full object-cover ring-2 ring-border" />
           ) : (
             <div className="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center ring-2 ring-border">
               <span className="text-accent font-bold text-xs">{t.name.charAt(0)}</span>

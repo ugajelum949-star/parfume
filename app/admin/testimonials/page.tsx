@@ -71,8 +71,9 @@ export default function AdminTestimonialsPage() {
       } else {
         toast.error(result.error || 'Gagal mengunggah foto')
       }
-    } catch {
-      toast.error('Gagal memproses gambar')
+    } catch (err) {
+      console.error('Upload error:', err)
+      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
     } finally {
       setUploading(false)
     }

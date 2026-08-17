@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { createOrder } from '@/app/actions/orders'
 import { formatCurrency } from '@/lib/utils'
 import { GIFT_WRAP_PRICE } from '@/lib/config'
+import { getImageSrc } from '@/lib/image-proxy'
 import { PROVINCES, getZoneByProvince, getShippingCost, getAvailableServices, calculateOrderTotal } from '@/lib/shipping'
 import toast from 'react-hot-toast'
 
@@ -276,7 +277,7 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
                     </div>
                     {pm.type === 'qris' && pm.qrisImageUrl && (
                       <div className="w-12 h-12 rounded bg-white p-1 shrink-0">
-                        <img src={pm.qrisImageUrl} alt={pm.label} className="w-full h-full object-contain" />
+                        <img src={getImageSrc(pm.qrisImageUrl)} alt={pm.label} className="w-full h-full object-contain" />
                       </div>
                     )}
                   </label>
@@ -294,7 +295,7 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
                   <div className="bg-accent/50 border border-border p-5 rounded-xl flex flex-col items-center mt-2">
                     <p className="text-xs text-muted-foreground font-bold uppercase mb-4 tracking-wider w-full text-left">Scan QRIS:</p>
                     <div className="bg-white p-3 rounded-xl">
-                      <img src={selectedMethod.qrisImageUrl} alt={selectedMethod.label} className="w-full max-w-[200px] h-auto object-contain" />
+                      <img src={getImageSrc(selectedMethod.qrisImageUrl)} alt={selectedMethod.label} className="w-full max-w-[200px] h-auto object-contain" />
                     </div>
                     <p className="text-xs text-muted-foreground mt-3">Gopay, OVO, Dana, ShopeePay, mBCA, dll.</p>
                   </div>
@@ -316,7 +317,7 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
                   <div key={`${item.id}-${item.size}`} className="flex items-center gap-3">
                     <div className="w-14 h-14 rounded-lg bg-gold/10 shrink-0 overflow-hidden">
                       {item.image ? (
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                        <img src={getImageSrc(item.image)} alt={item.name} className="w-full h-full object-cover rounded-lg" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"><ShoppingBag className="w-4 h-4 text-gold/40" /></div>
                       )}

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { formatCurrency } from '@/lib/utils'
 import { getFirstSizePrice } from '@/lib/price'
+import { getImageSrc } from '@/lib/image-proxy'
 
 type ProductCardProps = {
   id: string
@@ -23,7 +24,7 @@ export function ProductCard({ product }: { product: ProductCardProps }) {
       <div className="relative aspect-[4/5] rounded-lg overflow-hidden bg-secondary mb-3">
         {product.image ? (
           <Image
-            src={product.image}
+            src={getImageSrc(product.image)}
             alt={product.name}
             fill
             loading="lazy"

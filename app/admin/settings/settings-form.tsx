@@ -41,8 +41,9 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
       } else {
         toast.error(result.error || 'Gagal mengunggah foto')
       }
-    } catch {
-      toast.error('Gagal memproses gambar')
+    } catch (err) {
+      console.error('Upload error:', err)
+      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
     } finally {
       setImageUploading(prev => ({ ...prev, [key]: false }))
     }
@@ -62,8 +63,9 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
       } else {
         toast.error(result.error || 'Gagal mengunggah logo')
       }
-    } catch {
-      toast.error('Gagal memproses gambar')
+    } catch (err) {
+      console.error('Upload error:', err)
+      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
     } finally {
       setLogoUploading(false)
     }

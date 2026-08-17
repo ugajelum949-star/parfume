@@ -41,28 +41,12 @@ export async function uploadToS3(fileData: string | Buffer, folder: string): Pro
 
   const fileName = `uploads/${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${ext}`;
 
-  // Try upload with ACL public-read, retry without ACL if bucket policy rejects it
-  try {
-    await s3Client.send(new PutObjectCommand({
-      Bucket: BUCKET,
-      Key: fileName,
-      Body: buffer,
-      ContentType: mimeType,
-      ACL: 'public-read',
-    }));
-  } catch (aclErr: unknown) {
-    const err = aclErr as { name?: string; message?: string };
-    if (err?.name === 'AccessControlListNotSupported' || err?.message?.includes('ACL')) {
-      await s3Client.send(new PutObjectCommand({
-        Bucket: BUCKET,
-        Key: fileName,
-        Body: buffer,
-        ContentType: mimeType,
-      }));
-    } else {
-      throw aclErr;
-    }
-  }
+  await s3Client.send(new PutObjectCommand({
+    Bucket: BUCKET,
+    Key: fileName,
+    Body: buffer,
+    ContentType: mimeType,
+  }));
 
   const endpoint = process.env.S3_ENDPOINT || 'https://is3.cloudhost.id';
   return `${endpoint}/${BUCKET}/${fileName}`;
@@ -101,7 +85,6 @@ export async function getPresignedUploadUrl(folder: string, filename: string, co
     Bucket: BUCKET,
     Key: uniqueFilename,
     ContentType: contentType,
-    ACL: 'public-read',
   });
 
   const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });

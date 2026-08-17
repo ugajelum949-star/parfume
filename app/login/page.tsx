@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Label } from '@/components/ui/label'
 import { Loader2, Store } from 'lucide-react'
 import { useStoreSettings } from '@/components/providers/StoreProvider'
+import { getImageSrc } from '@/lib/image-proxy'
 
 export default function LoginPage() {
   const [state, action, isPending] = useActionState(login, { error: '' })
@@ -22,7 +23,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md bg-card border-border relative">
         <CardHeader className="text-center space-y-2">
           {storeLogo ? (
-            <img src={storeLogo} alt={storeName} className="w-16 h-16 rounded-xl mx-auto object-contain" />
+            <img src={getImageSrc(storeLogo)} alt={storeName} className="w-16 h-16 rounded-xl mx-auto object-contain" />
           ) : (
             <div className="w-16 h-16 rounded-xl bg-gold/10 flex items-center justify-center mx-auto">
               <Store className="w-8 h-8 text-gold" />

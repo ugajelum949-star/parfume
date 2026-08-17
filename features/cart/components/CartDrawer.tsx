@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useCartStore } from '../store'
 import { formatCurrency } from '@/lib/utils'
+import { getImageSrc } from '@/lib/image-proxy'
 import { ShoppingBag, X, Trash2, Plus, Minus } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -48,7 +49,7 @@ export function CartDrawer() {
                     <div key={`${item.id}-${item.size}`} className="flex items-center gap-3 py-4 px-6 border-b border-border">
                       <div className="w-16 h-16 rounded-lg bg-secondary shrink-0 overflow-hidden">
                         {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          <img src={getImageSrc(item.image)} alt={item.name} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <ShoppingBag className="w-4 h-4 text-muted-foreground" />

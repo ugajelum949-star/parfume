@@ -7,6 +7,7 @@ import { Menu, X, ShoppingBag, Search, Heart } from 'lucide-react'
 import { useCartStore } from '@/features/cart/store'
 import { useWishlistStore } from '@/features/wishlist/store'
 import { useStoreSettings } from '@/components/providers/StoreProvider'
+import { getImageSrc } from '@/lib/image-proxy'
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -71,7 +72,7 @@ export function Header() {
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <Link href="/" className="flex items-center gap-2">
-              <img src={storeLogo || '/img.png'} alt={storeName} className="w-8 h-8 md:w-9 md:h-9 rounded-lg object-contain" />
+              <img src={getImageSrc(storeLogo) || '/img.png'} alt={storeName} className="w-8 h-8 md:w-9 md:h-9 rounded-lg object-contain" />
               <span className="text-lg md:text-xl font-bold tracking-tight">{storeName || 'Store'}</span>
             </Link>
           </div>

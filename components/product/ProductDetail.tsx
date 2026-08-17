@@ -7,6 +7,7 @@ import { ShoppingCart, ArrowLeft, Check, Star, X, ZoomIn, ChevronLeft, ChevronRi
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/utils'
 import { getPostWarPrice } from '@/lib/price'
+import { getImageSrc } from '@/lib/image-proxy'
 import { useCartStore } from '@/features/cart/store'
 import toast from 'react-hot-toast'
 import { useWishlistStore } from '@/features/wishlist/store'
@@ -92,7 +93,7 @@ export function ProductDetail({ product }: { product: Product }) {
           <div className="relative aspect-square bg-gold/5 rounded-2xl overflow-hidden cursor-zoom-in group" onClick={() => setZoomed(true)}>
             {images.length > 0 ? (
               <Image
-                src={images[currentImage]}
+                src={getImageSrc(images[currentImage])}
                 alt={`${product.brand} ${product.name} — ${product.category} perfume`}
                 fill
                 priority
@@ -183,7 +184,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 </button>
               </>
             )}
-            <img src={images[currentImage]} alt={`${product.brand} ${product.name} — zoom`} className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg" />
+            <img src={getImageSrc(images[currentImage])} alt={`${product.brand} ${product.name} — zoom`} className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg" />
           </div>
         )}
 
