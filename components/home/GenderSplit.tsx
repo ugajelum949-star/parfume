@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ProductCard } from '@/components/shared/ProductCard'
+import { getImageSrc } from '@/lib/image-proxy'
 
 type Product = { id: string; name: string; brand: string; price: number; image: string | null; gender: string; stock?: number; stockData?: string; sizes?: string }
 
@@ -25,7 +26,7 @@ export function GenderSplit({ products, heroForHim, heroForHer, heroForEveryone,
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-4 md:gap-6">
         <Link href="/products?gender=Men" className="group relative aspect-[4/3] md:aspect-auto md:h-full rounded-xl overflow-hidden">
           {heroForHim ? (
-            <Image src={heroForHim} alt="Parfum untuk pria — For Him" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
+            <Image src={getImageSrc(heroForHim)} alt="Parfum untuk pria — For Him" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-blue-900 to-blue-950" />
           )}
@@ -44,7 +45,7 @@ export function GenderSplit({ products, heroForHim, heroForHer, heroForEveryone,
       <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-4 md:gap-6">
         <Link href="/products?gender=Women" className="group relative aspect-[4/3] md:aspect-auto md:h-full rounded-xl overflow-hidden">
           {heroForHer ? (
-            <Image src={heroForHer} alt="Parfum untuk wanita — For Her" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
+            <Image src={getImageSrc(heroForHer)} alt="Parfum untuk wanita — For Her" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-pink-900 to-pink-950" />
           )}
@@ -64,7 +65,7 @@ export function GenderSplit({ products, heroForHim, heroForHer, heroForEveryone,
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-4 md:gap-6">
           <Link href="/products?gender=Unisex" className="group relative aspect-[4/3] md:aspect-auto md:h-full rounded-xl overflow-hidden">
             {heroForEveryone ? (
-              <Image src={heroForEveryone} alt="Parfum unisex — For Everyone" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
+              <Image src={getImageSrc(heroForEveryone)} alt="Parfum unisex — For Everyone" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-purple-900 to-amber-900" />
             )}

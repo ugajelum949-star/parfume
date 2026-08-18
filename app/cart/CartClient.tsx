@@ -114,7 +114,6 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
   const finalTotal = orderCalc.total + giftWrapCost
 
   const handleCheckout = async () => {
-    if (!confirm('Buat pesanan ini? Total akan dikonfirmasi oleh admin.')) return
     if (!customerName.trim()) { toast.error('Mohon isi nama lengkap'); return }
     if (!customerPhone.trim()) { toast.error('Mohon isi nomor WhatsApp'); return }
     if (!customerAddress.trim()) { toast.error('Mohon isi alamat lengkap'); return }
@@ -422,7 +421,7 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
                   <span>Total</span>
                   <span className="text-gold">{formatCurrency(finalTotal)}</span>
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-1">*Harga akan diverifikasi ulang oleh admin saat diproses</p>
+                <p className="text-[10px] text-muted-foreground mt-1">🔒 Pembayaran Aman & Terenkripsi</p>
                 <Button onClick={handleCheckout} disabled={isLoading || isSulawesi} className="w-full hidden lg:flex py-6 text-base font-bold rounded-xl mt-5 bg-accent hover:bg-accent-hover text-white">
                   {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Bayar Sekarang'}
                 </Button>

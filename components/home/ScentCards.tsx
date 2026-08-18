@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { getImageSrc } from '@/lib/image-proxy'
 
 type ScentImages = { fresh?: string | null; floral?: string | null; woody?: string | null; amber?: string | null }
 
@@ -29,7 +30,7 @@ export function ScentCards({ images }: { images?: ScentImages }) {
           >
             <div className={`relative aspect-[4/3] rounded-xl bg-gradient-to-br ${family.color} overflow-hidden mb-3 group-hover:scale-[1.02] transition-transform`}>
               {images?.[family.key] ? (
-                <Image src={images[family.key]!} alt={family.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
+                <Image src={getImageSrc(images[family.key])} alt={family.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-5xl">{family.emoji}</div>
               )}
