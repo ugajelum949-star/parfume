@@ -9,6 +9,7 @@ import { updateSettingsFromForm } from '@/app/actions/settings'
 import { uploadImage } from '@/app/actions/upload'
 import { compressImage, fileToBase64 } from '@/lib/compression'
 import { Loader2, Upload, Store, CreditCard, MessageCircle, Bot, Truck, Gift, Image as ImageIcon } from 'lucide-react'
+import { getImageSrc } from '@/lib/image-proxy'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 
@@ -361,7 +362,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
                 <div className="flex items-center gap-4">
                   {imageUrls[key] ? (
                     <div className="w-24 h-16 rounded-lg bg-accent border border-border flex items-center justify-center overflow-hidden shrink-0">
-                      <img src={imageUrls[key]} alt={label} className="w-full h-full object-cover" />
+                      <img src={getImageSrc(imageUrls[key])} alt={label} className="w-full h-full object-cover" />
                     </div>
                   ) : (
                     <div className="w-24 h-16 rounded-lg bg-accent border border-border flex items-center justify-center shrink-0">
@@ -398,7 +399,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
                   <div className="flex items-center gap-3">
                     {imageUrls[key] ? (
                       <div className="w-16 h-16 rounded-lg bg-accent border border-border flex items-center justify-center overflow-hidden shrink-0">
-                        <img src={imageUrls[key]} alt={label} className="w-full h-full object-cover" />
+                        <img src={getImageSrc(imageUrls[key])} alt={label} className="w-full h-full object-cover" />
                       </div>
                     ) : (
                       <div className="w-16 h-16 rounded-lg bg-accent border border-border flex items-center justify-center shrink-0">
@@ -435,7 +436,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
                   <div className="flex items-center gap-3">
                     {imageUrls[key] ? (
                       <div className="w-16 h-16 rounded-lg bg-accent border border-border flex items-center justify-center overflow-hidden shrink-0">
-                        <img src={imageUrls[key]} alt={label} className="w-full h-full object-cover" />
+                        <img src={getImageSrc(imageUrls[key])} alt={label} className="w-full h-full object-cover" />
                       </div>
                     ) : (
                       <div className="w-16 h-16 rounded-lg bg-accent border border-border flex items-center justify-center shrink-0">
