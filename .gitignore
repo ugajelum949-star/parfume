@@ -36,9 +36,11 @@ pnpm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# ai config
+# ai config & temporary tool memory
 CLAUDE.md
 .cursorrules
+graphify-out/
+scratch/
 
 # deployment files
 scripts/
