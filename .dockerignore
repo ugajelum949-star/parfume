@@ -1,13 +1,31 @@
-node_modules
-.next
+# Version Control & AI Tool Memory
 .git
+.gitignore
+.gitmodules
+graphify-out
+scratch
+CLAUDE.md
+.cursorrules
+
+# Documentation & Internal Specs (Not needed in Docker/Production)
+docs
+*.md
+README.md
+
+# Local Dev Scripts & Tests
+scripts
+tests
+
+# Local Environment & Logs
 .env
-.env*
+.env*.local
 *.log
-graphify-out/
-scratch/
-docs/
-tests/
-scripts/
+
+# Build Caches & Container Configs
+.next
+node_modules
+dev.db
+drizzle
+Dockerfile
 .dockerignore
 .nixpacksignore
