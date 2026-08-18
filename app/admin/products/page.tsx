@@ -13,6 +13,7 @@ import { getProducts, createProduct, deleteProduct, updateProduct } from '@/app/
 import { uploadImage } from '@/app/actions/upload'
 import { compressImage, fileToBase64 } from '@/lib/compression'
 import { SCENT_FAMILIES, GENDERS, BRANDS } from '@/lib/config'
+import { getImageSrc } from '@/lib/image-proxy'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
@@ -311,7 +312,7 @@ export default function ProductsPage() {
                 <div className="flex flex-wrap gap-2">
                   {extraImages.map((url, i) => (
                     <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border">
-                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      <img src={getImageSrc(url)} alt="" className="w-full h-full object-cover" />
                       <button type="button" onClick={() => removeExtraImage(i)} className="absolute top-0 right-0 w-5 h-5 bg-destructive text-white rounded-bl-lg flex items-center justify-center text-xs">×</button>
                     </div>
                   ))}
@@ -365,7 +366,7 @@ export default function ProductsPage() {
                 <div key={item.id} className="flex items-center gap-4 px-4 py-3 hover:bg-accent/30 transition-colors">
                   <div className="w-12 h-12 rounded-lg bg-gold/10 shrink-0 overflow-hidden">
                     {item.image ? (
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                      <img src={getImageSrc(item.image)} alt={item.name} className="w-full h-full object-cover rounded-lg" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><Package className="w-5 h-5 text-gold/40" /></div>
                     )}

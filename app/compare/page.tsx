@@ -13,6 +13,7 @@ import { formatCurrency } from '@/lib/utils'
 import { parseAllSizePrices, getPostWarPrice } from '@/lib/price'
 import { getPublicProducts } from '@/app/actions/products'
 import { useCompareStore } from '@/features/compare/store'
+import { getImageSrc } from '@/lib/image-proxy'
 import toast from 'react-hot-toast'
 
 type Product = {
@@ -82,7 +83,7 @@ function CompareContent() {
       render: (p) => (
         <div className="relative aspect-[3/4] bg-gold/5 rounded-lg overflow-hidden mx-auto max-w-[200px]">
           {p.image ? (
-            <Image src={p.image} alt={p.name} fill className="object-cover" />
+            <Image src={getImageSrc(p.image)} alt={p.name} fill className="object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
               No Image

@@ -11,6 +11,7 @@ import { getWars, createWar, deleteWar } from '@/app/actions/wars'
 import { uploadImage } from '@/app/actions/upload'
 import { compressImage, fileToBase64 } from '@/lib/compression'
 import { BRANDS } from '@/lib/config'
+import { getImageSrc } from '@/lib/image-proxy'
 
 interface WarItem {
   id?: string
@@ -222,7 +223,7 @@ export default function AdminWarsPage() {
                     {item.image ? 'Change' : 'Upload'}
                     <input type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, idx)} disabled={uploading} />
                   </Label>
-                  {item.image && <img src={item.image} alt="" className="w-16 h-16 rounded-lg object-cover border border-border" />}
+                  {item.image && <img src={getImageSrc(item.image)} alt="" className="w-16 h-16 rounded-lg object-cover border border-border" />}
                 </div>
               ))}
             </div>
@@ -242,7 +243,7 @@ export default function AdminWarsPage() {
             <Card key={w.id} className="bg-card border-border">
               <CardContent className="flex items-center gap-4 p-4">
                 <div className="w-16 md:w-20 h-12 rounded-lg overflow-hidden bg-gold/5 shrink-0">
-                  {w.image ? <img src={w.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Swords className="w-4 h-4 text-gold/40" /></div>}
+                  {w.image ? <img src={getImageSrc(w.image)} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Swords className="w-4 h-4 text-gold/40" /></div>}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">

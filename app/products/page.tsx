@@ -18,6 +18,7 @@ import { useWishlistStore } from '@/features/wishlist/store'
 import { useCompareStore } from '@/features/compare/store'
 import { getPublicProducts } from '@/app/actions/products'
 import { SCENT_FAMILIES } from '@/lib/config'
+import { getImageSrc } from '@/lib/image-proxy'
 
 type Product = {
   id: string
@@ -175,7 +176,7 @@ function ProductsContent() {
                 <div className={`relative aspect-[4/5] bg-gold/5 overflow-hidden ${product.stock <= 0 ? 'opacity-60' : ''}`}>
                   {product.image ? (
                     <Image
-                      src={product.image}
+                      src={getImageSrc(product.image)}
                       alt={product.name}
                       fill
                       loading="lazy"

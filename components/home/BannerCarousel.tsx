@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getImageSrc } from '@/lib/image-proxy'
 
 type Banner = {
   id: string
@@ -30,7 +31,7 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
     const b = banners[0]
     const content = (
       <div className="relative aspect-[21/9] md:aspect-[3/1] rounded-2xl overflow-hidden">
-        <Image src={b.image} alt={b.title || 'Banner'} fill className="object-cover" />
+        <Image src={getImageSrc(b.image)} alt={b.title || 'Banner'} fill className="object-cover" />
         {b.title && (
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-6 md:p-10">
             <span className="text-white font-bold text-lg md:text-2xl">{b.title}</span>
@@ -63,7 +64,7 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
             {banners.map((b) => {
               const slide = (
                 <div key={b.id} className="relative w-full shrink-0 aspect-[21/9] md:aspect-[3/1]">
-                  <Image src={b.image} alt={b.title || 'Banner'} fill className="object-cover" />
+                  <Image src={getImageSrc(b.image)} alt={b.title || 'Banner'} fill className="object-cover" />
                   {b.title && (
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-6 md:p-10">
                       <span className="text-white font-bold text-lg md:text-2xl">{b.title}</span>

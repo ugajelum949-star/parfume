@@ -12,6 +12,7 @@ import { toast } from 'react-hot-toast'
 import { getBanners, createBanner, updateBanner, deleteBanner, toggleBanner } from '@/app/actions/banners'
 import { uploadImage } from '@/app/actions/upload'
 import { compressImage, fileToBase64 } from '@/lib/compression'
+import { getImageSrc } from '@/lib/image-proxy'
 
 interface Banner {
   id: string
@@ -172,7 +173,7 @@ export default function AdminBannersPage() {
                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
                   </Label>
                 </div>
-                {form.image && <img src={form.image} alt="" className="w-full h-32 object-cover rounded-lg mt-2 border border-border" />}
+                {form.image && <img src={getImageSrc(form.image)} alt="" className="w-full h-32 object-cover rounded-lg mt-2 border border-border" />}
               </div>
               <Button type="submit" disabled={saving} className="bg-accent text-white hover:bg-gold-light">
                 {saving ? 'Saving...' : editingId ? 'Update' : 'Create'}
@@ -187,7 +188,7 @@ export default function AdminBannersPage() {
           <Card key={b.id} className="bg-card border-border">
             <CardContent className="flex items-center gap-4 p-4">
               <div className="w-32 h-16 rounded-lg overflow-hidden bg-gold/5 shrink-0">
-                <img src={b.image} alt={b.title || 'Banner'} className="w-full h-full object-cover" />
+                <img src={getImageSrc(b.image)} alt={b.title || 'Banner'} className="w-full h-full object-cover" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm truncate">{b.title || 'No title'}</p>

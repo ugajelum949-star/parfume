@@ -19,6 +19,7 @@ import {
 } from '@/app/actions/featured-brands'
 import { getGenderSlots, saveGenderSlots } from '@/app/actions/settings'
 import { BRANDS } from '@/lib/config'
+import { getImageSrc } from '@/lib/image-proxy'
 
 interface FeaturedBrand {
   id: string
@@ -359,7 +360,7 @@ export default function AdminFeaturedBrandsPage() {
                   className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors text-left"
                 >
                   {p.image ? (
-                    <img src={p.image} alt="" className="w-10 h-10 rounded object-cover shrink-0" />
+                    <img src={getImageSrc(p.image)} alt="" className="w-10 h-10 rounded object-cover shrink-0" />
                   ) : (
                     <div className="w-10 h-10 rounded bg-muted shrink-0" />
                   )}

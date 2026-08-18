@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/utils'
 import { useCartStore } from '@/features/cart/store'
+import { getImageSrc } from '@/lib/image-proxy'
 import toast from 'react-hot-toast'
 
 export interface WarItem {
@@ -112,7 +113,7 @@ export function WarSection({ war, mode = 'live' }: { war: War; mode?: 'live' | '
         {/* War banner */}
         {war.image && (
           <div className="relative w-full h-40 md:h-64 rounded-2xl overflow-hidden mb-8">
-            <Image src={war.image} alt={war.name} fill className="object-cover" />
+            <Image src={getImageSrc(war.image)} alt={war.name} fill className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           </div>
         )}
@@ -130,7 +131,7 @@ export function WarSection({ war, mode = 'live' }: { war: War; mode?: 'live' | '
             <Card key={item.id} className="bg-card border-border overflow-hidden group hover:border-red-500/30 transition-colors">
               <div className="relative aspect-[3/4] bg-gold/5 overflow-hidden">
                 {item.image ? (
-                  <Image src={item.image} alt={item.name} fill loading="lazy" sizes="240px" className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
+                  <Image src={getImageSrc(item.image)} alt={item.name} fill loading="lazy" sizes="240px" className="object-cover group-hover:scale-[1.02] transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No Image</div>
                 )}

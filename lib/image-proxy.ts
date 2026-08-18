@@ -1,7 +1,8 @@
 /**
- * Convert S3 URLs or relative paths to proxy URLs for secure, CORS-free image loading.
+ * Convert S3 URLs, JSON array strings, or relative paths to proxy URLs for secure, CORS-free image loading.
  * Handles:
  * - https://is3.cloudhost.id/parfume/uploads/products/file.webp -> /api/image?key=uploads%2Fproducts%2Ffile.webp
+ * - ["https://is3.cloudhost.id/..."] -> /api/image?key=uploads%2Fproducts%2Ffile.webp
  * - /uploads/products/file.webp -> /api/image?key=uploads%2Fproducts%2Ffile.webp
  * - uploads/products/file.webp -> /api/image?key=uploads%2Fproducts%2Ffile.webp
  * - /api/image?key=... or local /img.png -> returned as-is
@@ -9,14 +10,31 @@
 export function toProxyUrl(url: string | null | undefined): string {
   if (!url) return ''
 
+  let target = url.trim()
+
+  // Handle JSON array string e.g. ["https://..."] or ["uploads/..."]
+  if (target.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(target)
+      if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'string') {
+        target = parsed[0].trim()
+      }
+    } catch {}
+  }
+
+  // Handle comma-separated list
+  if (target.includes(',') && !target.startsWith('data:')) {
+    target = target.split(',')[0].trim()
+  }
+
   // Already a proxy URL or local static asset
-  if (url.startsWith('/api/image') || (url.startsWith('/') && !url.includes('/uploads/'))) {
-    return url
+  if (target.startsWith('/api/image') || (target.startsWith('/') && !target.includes('/uploads/'))) {
+    return target
   }
 
   // Handle IDCloudHost S3 URLs (regardless of bucket name: parfume, app-bucket, etc.)
-  if (url.includes('is3.cloudhost.id/')) {
-    const afterEndpoint = url.split('is3.cloudhost.id/')[1]
+  if (target.includes('is3.cloudhost.id/')) {
+    const afterEndpoint = target.split('is3.cloudhost.id/')[1]
     const parts = afterEndpoint.split('/')
     // First part is the bucket name, the rest is the object key
     const key = parts.slice(1).join('/')
@@ -24,17 +42,17 @@ export function toProxyUrl(url: string | null | undefined): string {
   }
 
   // Handle any other absolute URL containing /uploads/
-  if (url.includes('/uploads/')) {
-    const key = 'uploads/' + url.split('/uploads/')[1]
+  if (target.includes('/uploads/')) {
+    const key = 'uploads/' + target.split('/uploads/')[1]
     return `/api/image?key=${encodeURIComponent(key)}`
   }
 
   // Handle raw key without leading slash
-  if (url.startsWith('uploads/')) {
-    return `/api/image?key=${encodeURIComponent(url)}`
+  if (target.startsWith('uploads/')) {
+    return `/api/image?key=${encodeURIComponent(target)}`
   }
 
-  return url
+  return target
 }
 
 /**
@@ -44,4 +62,5 @@ export function toProxyUrl(url: string | null | undefined): string {
 export function getImageSrc(url: string | null | undefined): string {
   return toProxyUrl(url)
 }
+
 

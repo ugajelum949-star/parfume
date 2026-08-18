@@ -14,6 +14,7 @@ import { getFirstSizePrice, getPostWarPrice } from '@/lib/price'
 import { useCartStore } from '@/features/cart/store'
 import { useWishlistStore } from '@/features/wishlist/store'
 import { getPublicProducts } from '@/app/actions/products'
+import { getImageSrc } from '@/lib/image-proxy'
 
 type Product = {
   id: string
@@ -148,7 +149,7 @@ export function WishlistContent() {
                     <div className={`relative aspect-[3/4] bg-gold/5 overflow-hidden ${product.stock <= 0 ? 'opacity-60' : ''}`}>
                       {product.image ? (
                         <Image
-                          src={product.image}
+                          src={getImageSrc(product.image)}
                           alt={product.name}
                           fill
                           loading="lazy"

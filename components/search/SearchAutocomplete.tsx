@@ -7,6 +7,7 @@ import { Search, Clock, TrendingUp, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { formatCurrency } from '@/lib/utils'
 import { getFirstSizePrice, getPostWarPrice } from '@/lib/price'
+import { getImageSrc } from '@/lib/image-proxy'
 
 type Product = {
   id: string
@@ -291,7 +292,7 @@ export function SearchAutocomplete({
                     <div className="w-10 h-10 relative rounded-md overflow-hidden bg-gold/5 shrink-0">
                       {product.image ? (
                         <Image
-                          src={product.image}
+                          src={getImageSrc(product.image)}
                           alt={product.name}
                           fill
                           className="object-cover"
@@ -334,7 +335,7 @@ export function SearchAutocomplete({
                     <div className="w-10 h-10 relative rounded-md overflow-hidden bg-gold/5 shrink-0">
                       {product.image ? (
                         <Image
-                          src={product.image}
+                          src={getImageSrc(product.image)}
                           alt={product.name}
                           fill
                           className="object-cover"
