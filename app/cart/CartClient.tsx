@@ -15,7 +15,7 @@ import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ShoppingBag, Trash2, Plus, Minus, ArrowLeft, Loader2 } from 'lucide-react'
+import { ShoppingBag, Trash2, Plus, Minus, ArrowLeft, Loader2, Lock } from 'lucide-react'
 
 type PaymentMethod = {
   id: string
@@ -112,6 +112,16 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
   })
 
   const finalTotal = orderCalc.total + giftWrapCost
+
+  const isAddressComplete = Boolean(
+    customerName.trim() &&
+    customerPhone.trim() &&
+    customerAddress.trim() &&
+    customerCity.trim() &&
+    customerPostalCode.trim() &&
+    customerProvince &&
+    !isSulawesi
+  )
 
   const handleCheckout = async () => {
     if (!customerName.trim()) { toast.error('Mohon isi nama lengkap'); return }
@@ -264,46 +274,63 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
             {/* Step 2: Payment */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center border border-gold/20 text-gold font-bold text-sm">2</div>
-                <h2 className="text-lg font-bold uppercase tracking-wider">Metode Pembayaran</h2>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border font-bold text-sm transition-colors ${
+                  isAddressComplete ? 'bg-gold/10 border-gold/30 text-gold' : 'bg-muted border-border text-muted-foreground'
+                }`}>2</div>
+                <h2 className={`text-lg font-bold uppercase tracking-wider transition-colors ${
+                  isAddressComplete ? 'text-foreground' : 'text-muted-foreground'
+                }`}>Metode Pembayaran</h2>
               </div>
-              <div className="bg-card border border-border p-6 rounded-2xl space-y-3">
-                {initialPaymentMethods.map(pm => (
-                  <label key={pm.id} className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${paymentMethodId === pm.id ? 'border-gold bg-gold/5' : 'border-border hover:border-gold/30'}`}>
-                    <input type="radio" name="payment" checked={paymentMethodId === pm.id} onChange={() => setPaymentMethodId(pm.id)} className="accent-gold w-4 h-4" />
-                    <div className="flex-1">
-                      <p className="text-sm font-bold">{pm.label}</p>
-                      <p className="text-xs text-muted-foreground">{pm.type === 'qris' ? 'Scan Barcode / E-Wallet' : 'Transfer Manual'}</p>
-                    </div>
-                    {pm.type === 'qris' && pm.qrisImageUrl && (
-                      <div className="w-12 h-12 rounded bg-white p-1 shrink-0">
-                        <img src={getImageSrc(pm.qrisImageUrl)} alt={pm.label} className="w-full h-full object-contain" />
+
+              {!isAddressComplete ? (
+                <div className="bg-card/40 border border-dashed border-border/80 p-8 rounded-2xl text-center space-y-2">
+                  <div className="w-12 h-12 rounded-full bg-gold/5 border border-gold/10 flex items-center justify-center mx-auto text-gold/60 mb-2">
+                    <Lock className="w-5 h-5" />
+                  </div>
+                  <p className="text-sm font-semibold text-foreground">Metode Pembayaran Terkunci</p>
+                  <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                    Silakan lengkapi seluruh formulir <strong className="text-gold">Informasi Pengiriman (Langkah 1)</strong> di atas untuk membuka opsi pembayaran & QRIS.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-card border border-border p-6 rounded-2xl space-y-3 animate-in fade-in-50 duration-300">
+                  {initialPaymentMethods.map(pm => (
+                    <label key={pm.id} className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${paymentMethodId === pm.id ? 'border-gold bg-gold/5' : 'border-border hover:border-gold/30'}`}>
+                      <input type="radio" name="payment" checked={paymentMethodId === pm.id} onChange={() => setPaymentMethodId(pm.id)} className="accent-gold w-4 h-4" />
+                      <div className="flex-1">
+                        <p className="text-sm font-bold">{pm.label}</p>
+                        <p className="text-xs text-muted-foreground">{pm.type === 'qris' ? 'Scan Barcode / E-Wallet' : 'Transfer Manual'}</p>
                       </div>
-                    )}
-                  </label>
-                ))}
-                {/* Selected method preview */}
-                {selectedMethod?.type === 'transfer' && selectedMethod.accountNumber && (
-                  <div className="bg-accent/50 border border-border p-5 rounded-xl mt-2">
-                    <p className="text-xs text-muted-foreground font-bold uppercase mb-2 tracking-wider">Transfer ke:</p>
-                    <p className="text-foreground font-bold text-lg">{selectedMethod.label}</p>
-                    <p className="text-xl font-mono text-gold tracking-wider my-1">{selectedMethod.accountNumber}</p>
-                    <p className="text-sm text-muted-foreground">a.n {selectedMethod.accountName}</p>
-                  </div>
-                )}
-                {selectedMethod?.type === 'qris' && selectedMethod.qrisImageUrl && (
-                  <div className="bg-accent/50 border border-border p-5 rounded-xl flex flex-col items-center mt-2">
-                    <p className="text-xs text-muted-foreground font-bold uppercase mb-4 tracking-wider w-full text-left">Scan QRIS:</p>
-                    <div className="bg-white p-3 rounded-xl">
-                      <img src={getImageSrc(selectedMethod.qrisImageUrl)} alt={selectedMethod.label} className="w-full max-w-[200px] h-auto object-contain" />
+                      {pm.type === 'qris' && pm.qrisImageUrl && (
+                        <div className="w-12 h-12 rounded bg-white p-1 shrink-0">
+                          <img src={getImageSrc(pm.qrisImageUrl)} alt={pm.label} className="w-full h-full object-contain" />
+                        </div>
+                      )}
+                    </label>
+                  ))}
+                  {/* Selected method preview */}
+                  {selectedMethod?.type === 'transfer' && selectedMethod.accountNumber && (
+                    <div className="bg-accent/50 border border-border p-5 rounded-xl mt-2">
+                      <p className="text-xs text-muted-foreground font-bold uppercase mb-2 tracking-wider">Transfer ke:</p>
+                      <p className="text-foreground font-bold text-lg">{selectedMethod.label}</p>
+                      <p className="text-xl font-mono text-gold tracking-wider my-1">{selectedMethod.accountNumber}</p>
+                      <p className="text-sm text-muted-foreground">a.n {selectedMethod.accountName}</p>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-3">Gopay, OVO, Dana, ShopeePay, mBCA, dll.</p>
-                  </div>
-                )}
-                {initialPaymentMethods.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Belum ada metode pembayaran.</p>
-                )}
-              </div>
+                  )}
+                  {selectedMethod?.type === 'qris' && selectedMethod.qrisImageUrl && (
+                    <div className="bg-accent/50 border border-border p-5 rounded-xl flex flex-col items-center mt-2">
+                      <p className="text-xs text-muted-foreground font-bold uppercase mb-4 tracking-wider w-full text-left">Scan QRIS:</p>
+                      <div className="bg-white p-3 rounded-xl">
+                        <img src={getImageSrc(selectedMethod.qrisImageUrl)} alt={selectedMethod.label} className="w-full max-w-[200px] h-auto object-contain" />
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-3">Gopay, OVO, Dana, ShopeePay, mBCA, dll.</p>
+                    </div>
+                  )}
+                  {initialPaymentMethods.length === 0 && (
+                    <p className="text-sm text-muted-foreground">Belum ada metode pembayaran.</p>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Step 3: Review */}
@@ -422,8 +449,8 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
                   <span className="text-gold">{formatCurrency(finalTotal)}</span>
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1">🔒 Pembayaran Aman & Terenkripsi</p>
-                <Button onClick={handleCheckout} disabled={isLoading || isSulawesi} className="w-full hidden lg:flex py-6 text-base font-bold rounded-xl mt-5 bg-accent hover:bg-accent-hover text-white">
-                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Bayar Sekarang'}
+                <Button onClick={handleCheckout} disabled={isLoading || isSulawesi || !isAddressComplete} className="w-full hidden lg:flex py-6 text-base font-bold rounded-xl mt-5 bg-accent hover:bg-accent-hover text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : !isAddressComplete ? 'Lengkapi Alamat Pengiriman' : 'Bayar Sekarang'}
                 </Button>
               </div>
             </div>
@@ -438,8 +465,8 @@ export function CartClient({ initialSettings, initialPaymentMethods }: CartClien
             <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Total Pembayaran</span>
             <span className="text-lg font-bold text-gold">{formatCurrency(finalTotal)}</span>
           </div>
-          <Button onClick={handleCheckout} disabled={isLoading || isSulawesi} className="flex-1 py-5 text-sm font-bold rounded-xl bg-accent hover:bg-accent-hover text-white">
-            {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Bayar Sekarang'}
+          <Button onClick={handleCheckout} disabled={isLoading || isSulawesi || !isAddressComplete} className="flex-1 py-5 text-sm font-bold rounded-xl bg-accent hover:bg-accent-hover text-white disabled:opacity-50 disabled:cursor-not-allowed">
+            {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : !isAddressComplete ? 'Lengkapi Alamat' : 'Bayar Sekarang'}
           </Button>
         </div>
       </div>
