@@ -4,13 +4,10 @@ node_modules
 .env
 .env*
 *.log
-dev.db
-docs/
 graphify-out/
 scratch/
+docs/
 tests/
 scripts/
-drizzle/
-Dockerfile
 .dockerignore
 .nixpacksignore
