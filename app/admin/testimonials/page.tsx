@@ -8,8 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Star, Plus, Pencil, Trash2, X, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { getTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from '@/app/actions/testimonials'
-import { uploadImage } from '@/app/actions/upload'
-import { compressImage, fileToBase64 } from '@/lib/compression'
+import { useImageUpload } from '@/lib/hooks/use-image-upload'
 
 interface Testimonial {
   id: string
@@ -42,7 +41,7 @@ export default function AdminTestimonialsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [uploading, setUploading] = useState(false)
+  const { uploading, handleUpload } = useImageUpload('testimonials')
 
   const load = async () => {
     const data = await getTestimonials()
@@ -57,26 +56,8 @@ export default function AdminTestimonialsPage() {
     init()
   }, [])
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'avatar' | 'proofImage') => {
-    const rawFile = e.target.files?.[0]
-    if (!rawFile) return
-    setUploading(true)
-    try {
-      const compressedFile = await compressImage(rawFile, 0.85, 1920)
-      const base64 = await fileToBase64(compressedFile)
-      const result = await uploadImage(base64, 'testimonials')
-      if (result.success && result.url) {
-        setForm((f) => ({ ...f, [field]: result.url }))
-        toast.success(field === 'avatar' ? 'Avatar berhasil diunggah' : 'Foto berhasil diunggah')
-      } else {
-        toast.error(result.error || 'Gagal mengunggah foto')
-      }
-    } catch (err) {
-      console.error('Upload error:', err)
-      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
-    } finally {
-      setUploading(false)
-    }
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'avatar' | 'proofImage') => {
+    handleUpload(e.target.files?.[0], url => setForm((f) => ({ ...f, [field]: url })))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

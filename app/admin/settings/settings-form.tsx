@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { updateSettingsFromForm } from '@/app/actions/settings'
 import { uploadImage } from '@/app/actions/upload'
-import { compressImage, fileToBase64 } from '@/lib/compression'
+import { compressImage } from '@/lib/compression'
 import { Loader2, Upload, Store, CreditCard, MessageCircle, Bot, Truck, Gift, Image as ImageIcon } from 'lucide-react'
 import { getImageSrc } from '@/lib/image-proxy'
 import toast from 'react-hot-toast'
@@ -33,8 +33,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
     if (!rawFile) return
     setImageUploading(prev => ({ ...prev, [key]: true }))
     try {
-      const compressedFile = await compressImage(rawFile, 0.85, 1920)
-      const base64 = await fileToBase64(compressedFile)
+      const base64 = await compressImage(rawFile, 0.85, 1920)
       const result = await uploadImage(base64, folder)
       if (result.success && result.url) {
         setImageUrls(prev => ({ ...prev, [key]: result.url! }))
@@ -55,8 +54,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
     if (!rawFile) return
     setLogoUploading(true)
     try {
-      const compressedFile = await compressImage(rawFile, 0.85, 1920)
-      const base64 = await fileToBase64(compressedFile)
+      const base64 = await compressImage(rawFile, 0.85, 1920)
       const result = await uploadImage(base64, 'logos')
       if (result.success && result.url) {
         setLogoUrl(result.url)

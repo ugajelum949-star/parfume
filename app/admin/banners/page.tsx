@@ -10,8 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Plus, Pencil, Trash2, X, Loader2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { getBanners, createBanner, updateBanner, deleteBanner, toggleBanner } from '@/app/actions/banners'
-import { uploadImage } from '@/app/actions/upload'
-import { compressImage, fileToBase64 } from '@/lib/compression'
+import { useImageUpload } from '@/lib/hooks/use-image-upload'
 import { getImageSrc } from '@/lib/image-proxy'
 
 interface Banner {
@@ -32,7 +31,7 @@ export default function AdminBannersPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [uploading, setUploading] = useState(false)
+  const { uploading, handleUpload } = useImageUpload('banners')
 
   const load = async () => {
     const data = await getBanners()
@@ -47,26 +46,8 @@ export default function AdminBannersPage() {
     init()
   }, [])
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawFile = e.target.files?.[0]
-    if (!rawFile) return
-    setUploading(true)
-    try {
-      const compressedFile = await compressImage(rawFile, 0.85, 1920)
-      const base64 = await fileToBase64(compressedFile)
-      const result = await uploadImage(base64, 'banners')
-      if (result.success && result.url) {
-        setForm(f => ({ ...f, image: result.url! }))
-        toast.success('Foto berhasil diunggah')
-      } else {
-        toast.error(result.error || 'Gagal mengunggah foto')
-      }
-    } catch (err) {
-      console.error('Upload error:', err)
-      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
-    } finally {
-      setUploading(false)
-    }
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleUpload(e.target.files?.[0], url => setForm(f => ({ ...f, image: url })))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

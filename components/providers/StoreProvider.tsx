@@ -14,7 +14,7 @@ interface StoreSettings {
   floatingButtonType: string
 }
 
-const StoreContext = createContext<StoreSettings>({
+const DEFAULTS: StoreSettings = {
   storeName: 'My Store',
   storeSlogan: '',
   storeLogo: '',
@@ -23,23 +23,16 @@ const StoreContext = createContext<StoreSettings>({
   telegramUsername: '',
   floatingButtonEnabled: false,
   floatingButtonType: 'whatsapp',
-})
+}
+
+const StoreContext = createContext<StoreSettings>(DEFAULTS)
 
 export function useStoreSettings() {
   return useContext(StoreContext)
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<StoreSettings>({
-    storeName: 'My Store',
-    storeSlogan: '',
-    storeLogo: '',
-    supportEmail: '',
-    whatsapp: '',
-    telegramUsername: '',
-    floatingButtonEnabled: false,
-    floatingButtonType: 'whatsapp',
-  })
+  const [settings, setSettings] = useState<StoreSettings>(DEFAULTS)
 
   useEffect(() => {
     getSettings(['store_name', 'store_slogan', 'store_logo', 'support_email', 'whatsapp', 'telegramUsername', 'floatingButtonEnabled', 'floatingButtonType']).then((data) => {

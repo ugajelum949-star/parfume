@@ -8,8 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Plus, Trash2, X, Loader2, Swords } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { getWars, createWar, deleteWar } from '@/app/actions/wars'
-import { uploadImage } from '@/app/actions/upload'
-import { compressImage, fileToBase64 } from '@/lib/compression'
+import { useImageUpload } from '@/lib/hooks/use-image-upload'
 import { BRANDS } from '@/lib/config'
 import { getImageSrc } from '@/lib/image-proxy'
 
@@ -41,7 +40,7 @@ export default function AdminWarsPage() {
   const [wars, setWars] = useState<War[]>([])
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [uploading, setUploading] = useState(false)
+  const { uploading, handleUpload } = useImageUpload('wars')
 
   // Form state
   const [warName, setWarName] = useState('')
@@ -62,30 +61,14 @@ export default function AdminWarsPage() {
     init()
   }, [])
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, idx?: number) => {
-    const rawFile = e.target.files?.[0]
-    if (!rawFile) return
-    setUploading(true)
-    try {
-      const compressedFile = await compressImage(rawFile, 0.85, 1920)
-      const base64 = await fileToBase64(compressedFile)
-      const result = await uploadImage(base64, 'wars')
-      if (result.success && result.url) {
-        if (idx !== undefined) {
-          setWarItems(prev => prev.map((item, i) => i === idx ? { ...item, image: result.url! } : item))
-        } else {
-          setWarImage(result.url)
-        }
-        toast.success('Foto berhasil diunggah')
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, idx?: number) => {
+    handleUpload(e.target.files?.[0], url => {
+      if (idx !== undefined) {
+        setWarItems(prev => prev.map((item, i) => i === idx ? { ...item, image: url } : item))
       } else {
-        toast.error(result.error || 'Gagal mengunggah foto')
+        setWarImage(url)
       }
-    } catch (err) {
-      console.error('Upload error:', err)
-      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
-    } finally {
-      setUploading(false)
-    }
+    })
   }
 
   const handleSubmit = async () => {

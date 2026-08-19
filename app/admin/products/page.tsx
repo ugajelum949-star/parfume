@@ -10,8 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Plus, Package, Trash2, Loader2, Image as ImageIcon, Pencil } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import { getProducts, createProduct, deleteProduct, updateProduct } from '@/app/actions/products'
-import { uploadImage } from '@/app/actions/upload'
-import { compressImage, fileToBase64 } from '@/lib/compression'
+import { useImageUpload } from '@/lib/hooks/use-image-upload'
 import { SCENT_FAMILIES, GENDERS, BRANDS } from '@/lib/config'
 import { getImageSrc } from '@/lib/image-proxy'
 import { useEffect } from 'react'
@@ -53,54 +52,19 @@ export default function ProductsPage() {
   const [isFeatured, setIsFeatured] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
   const [extraImages, setExtraImages] = useState<string[]>([])
-  const [uploading, setUploading] = useState(false)
+  const { uploading, handleUpload } = useImageUpload('products')
 
   useEffect(() => {
     getProducts().then((data) => setProducts(data as Product[]))
   }, [])
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const rawFile = e.target.files?.[0]
-    if (!rawFile) return
-    setUploading(true)
-    try {
-      const compressedFile = await compressImage(rawFile, 0.85, 1920)
-      const base64 = await fileToBase64(compressedFile)
-      const result = await uploadImage(base64, 'products')
-      if (result.success && result.url) {
-        setImageUrl(result.url)
-        toast.success('Foto berhasil diunggah')
-      } else {
-        toast.error(result.error || 'Gagal mengunggah foto')
-      }
-    } catch (err) {
-      console.error('Upload error:', err)
-      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
-    } finally {
-      setUploading(false)
-    }
+    handleUpload(e.target.files?.[0], setImageUrl)
   }
 
   async function handleExtraImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const rawFile = e.target.files?.[0]
-    if (!rawFile || extraImages.length >= 4) return
-    setUploading(true)
-    try {
-      const compressedFile = await compressImage(rawFile, 0.85, 1920)
-      const base64 = await fileToBase64(compressedFile)
-      const result = await uploadImage(base64, 'products')
-      if (result.success && result.url) {
-        setExtraImages(prev => [...prev, result.url!])
-        toast.success('Foto berhasil diunggah')
-      } else {
-        toast.error(result.error || 'Gagal mengunggah foto')
-      }
-    } catch (err) {
-      console.error('Upload error:', err)
-      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
-    } finally {
-      setUploading(false)
-    }
+    if (extraImages.length >= 4) return
+    handleUpload(e.target.files?.[0], url => setExtraImages(prev => [...prev, url]))
   }
 
   function removeExtraImage(index: number) {

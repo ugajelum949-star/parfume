@@ -5,9 +5,9 @@ import { Footer } from "@/components/layout/Footer";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { StoreProvider } from "@/components/providers/StoreProvider";
 import { ProtectionProvider } from "@/components/providers/ProtectionProvider";
-import { ClientOverlays } from "@/components/shared/ClientOverlays";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { FloatingChat } from "@/components/shared/FloatingChat";
+import { CartDrawer } from "@/features/cart/components/CartDrawer";
 import "./globals.css";
 
 const inter = Inter({
@@ -116,7 +116,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <Footer />
             <BottomNav />
-            <ClientOverlays />
+            <CartDrawer />
             <ScrollToTop />
             <FloatingChat />
           </div>
