@@ -37,16 +37,8 @@ export async function uploadImage(base64Data: string, folder: string) {
     const publicUrl = await uploadToS3(base64Data, folder)
 
     return { success: true, url: publicUrl }
-  } catch (error: unknown) {
-    console.error('[uploadImage] Error type:', typeof error, 'Constructor:', error?.constructor?.name)
-    console.error('[uploadImage] Full error:', error)
-    if (error instanceof Error) {
-      console.error('[uploadImage] Message:', error.message)
-      if ('digest' in error) {
-        console.error('[uploadImage] Digest:', (error as any).digest)
-      }
-    }
-    const msg = error instanceof Error ? error.message : String(error)
-    return { success: false, error: msg || 'Gagal mengunggah gambar' }
+  } catch {
+    console.error('[uploadImage] Upload failed')
+    return { success: false, error: 'Gagal mengunggah gambar' }
   }
 }
