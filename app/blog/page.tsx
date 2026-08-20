@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getPosts } from '@/app/actions/posts'
+import { getImageSrc } from '@/lib/image-proxy'
 import { Header } from '@/components/layout/Header'
 import type { Metadata } from 'next'
 
@@ -63,7 +64,7 @@ export default async function BlogPage() {
                 <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-gold/5 mb-3">
                   {post.coverImage ? (
                     <Image
-                      src={post.coverImage}
+                      src={getImageSrc(post.coverImage)}
                       alt={post.title}
                       fill
                       loading="lazy"

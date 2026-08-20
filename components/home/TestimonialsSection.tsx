@@ -44,7 +44,7 @@ function TestimonialCard({ t, rotation }: { t: Testimonial; rotation: string }) 
         {t.proofImage ? (
           <div className="w-full h-36 md:h-40 rounded-xl overflow-hidden border border-border bg-black/20 shrink-0">
             <img
-              src={t.proofImage}
+              src={getImageSrc(t.proofImage)}
               alt="Bukti"
               className="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-300"
             />

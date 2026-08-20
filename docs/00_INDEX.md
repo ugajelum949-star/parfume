@@ -97,6 +97,7 @@ graph TD
 | **Pilar 0** | Master Brand & Dynamic SEO | **SELESAI ✅** | [docs/PROJECT_PLAN.md](file:///d:/parfume/docs/PROJECT_PLAN.md) |
 | **Pilar 1** | Scale Project Part 1 (5-Brand Slider & Gender Slots) | **SELESAI ✅** | [docs/SCALE_PROJECT_PART_1.md](file:///d:/parfume/docs/SCALE_PROJECT_PART_1.md) |
 | **Pilar 2** | S3 Photo Upload & CSS Watermark Overlay | **SELESAI ✅** | [docs/PLAN_FIX_UPLOAD_WATERMARK.md](file:///d:/parfume/docs/PLAN_FIX_UPLOAD_WATERMARK.md) |
+| **Pilar 2.1** | Cleanup Dead Code & Upload Normalization | **SELESAI ✅** | Commit `062f584`, `f6158a7` |
 | **Pilar 3** | Human Error Protection & Transaction Audit (41 Points) | **SELESAI ✅** | [docs/HUMANERROR.md](file:///d:/parfume/docs/HUMANERROR.md) |
 | **Pilar 4** | Scale Project Part 2 (Frontend Luxury & Admin Functions) | **SIAP EKSEKUSI 🚀** | [docs/SCALE_PROJECT_PART_2.md](file:///d:/parfume/docs/SCALE_PROJECT_PART_2.md) |
 

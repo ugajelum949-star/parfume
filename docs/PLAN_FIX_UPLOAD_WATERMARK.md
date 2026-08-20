@@ -1,6 +1,6 @@
 # 🛠️ PANDUAN TEKNIS: PERBAIKAN PHOTO UPLOAD & WATERMARK OVERLAY 
 
-> **STATUS: SELESAI / COMPLETED ✅** (Arsitektur Client-Side Canvas Compression & CSS Watermark Overlay siap/terpasang)
+> **STATUS: SELESAI / COMPLETED ✅** (Upload pipeline, client-side image normalization, S3 cleanup, dan CSS watermark overlay terpasang)
 
 Dokumen ini adalah spesifikasi teknis dan panduan eksekusi mandiri untuk **Claude Code** dalam memperbaiki sistem upload foto (>1MB error, hanya JPG yang bisa, PNG transparan rusak), menerapkan penghapusan file sampah S3 (*Auto-Cleanup*), penanganan error ACL S3, serta mengadopsi sistem CSS Watermark Overlay dari `D:\jersey-store`.
 
@@ -23,7 +23,7 @@ Dokumen ini adalah spesifikasi teknis dan panduan eksekusi mandiri untuk **Claud
 
 | No | Masalah Saat Ini | Penyebab Akar (*Root Cause*) | Solusi Yang Harus Diterapkan |
 | :--- | :--- | :--- | :--- |
-| **1** | **Upload >1MB Langsung Error** | Browser membaca file menjadi Base64 mentah tanpa kompresi klien. Server Action memicu *HTTP 413 Payload Too Large*. | Pasang `lib/compression.ts` berbasis HTML5 Canvas untuk kompresi otomatis (15MB ➔ ~250KB) sebelum dikirim. |
+| **1** | **Upload >1MB atau JPG tertentu gagal** | Encoding/metadata sumber dan base64 mentah tidak selalu stabil di browser/server action. | `lib/compression.ts` decode lalu re-encode semua JPEG/PNG/WebP via Canvas sebelum upload. |
 | **2** | **Hanya JPG yang Bisa & PNG Transparan Jadi Hitam** | Fungsi `forceJpg()` di `upload.ts` mengonversi paksa seluruh gambar ke JPEG dan membuang *alpha channel* PNG. | Hapus `forceJpg()`, pertahankan format asli (PNG transparan tetap PNG, WebP tetap WebP). |
 | **3** | **Watermark Sharp Merusak Foto Asli di S3** | Server menjalankan Sharp watermark permanen ke dalam file gambar. Foto menjadi buram, berat, dan crash jika logo hilang. | Hapus Sharp watermark server-side, ganti dengan **CSS/HTML Watermark Overlay** non-destruktif di UI ala `jersey-store`. |
 | **4** | **File Sampah (Orphaned Files) Menumpuk di S3** | Menghapus produk/banner di admin hanya menghapus data DB tanpa menghapus file fisik di S3. | Panggil `deleteFromS3(imageUrl)` di semua Server Action delete (`products.ts`, `banners.ts`, `wars.ts`). |

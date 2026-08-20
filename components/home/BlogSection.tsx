@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { getImageSrc } from '@/lib/image-proxy'
 type Post = {
   id: string
   title: string
@@ -43,7 +44,7 @@ export function BlogSection({ posts }: { posts: Post[] }) {
               <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-gold/5 mb-3">
                 {post.coverImage ? (
                   <Image
-                    src={post.coverImage}
+                    src={getImageSrc(post.coverImage)}
                     alt={post.title}
                     fill
                     loading="lazy"

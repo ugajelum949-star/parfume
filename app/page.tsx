@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { getImageSrc } from '@/lib/image-proxy'
 import { eq, desc } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { banners, products } from '@/db/schema'
@@ -99,7 +100,7 @@ export default async function Home() {
         <div className="absolute inset-0">
           {heroImage ? (
             <Image
-              src={heroImage}
+              src={getImageSrc(heroImage)}
               alt="Parfume Store — Parfum branded original Indonesia"
               fill
               priority
@@ -146,6 +147,9 @@ export default async function Home() {
       {/* Most Popular + Sale tabs */}
       <PopularSection products={allProducts} />
 
+      {/* Featured Brand Sliders */}
+      <BrandShowcaseSlider brands={brandProducts} />
+
       {/* Scent Family Cards */}
       <ScentCards images={{ fresh: scentFresh, floral: scentFloral, woody: scentWoody, amber: scentAmber }} />
 
@@ -159,9 +163,6 @@ export default async function Home() {
         curatedWomen={curatedWomen}
         curatedUnisex={curatedUnisex}
       />
-
-      {/* Featured Brand Sliders */}
-      <BrandShowcaseSlider brands={brandProducts} />
 
 {/* Blog */}
       {latestPosts.length > 0 && (

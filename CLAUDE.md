@@ -44,9 +44,9 @@ Products support up to 5 images (1 main + 4 extra via `productImages`). Brand is
 - `ratelimit.ts` — rate limiter helper for login and API endpoints
 - `utils.ts` — `formatCurrency()` (IDR), `cn()` (clsx + tailwind-merge)
 - `price.ts` — per-size pricing from stockData JSON (original/sale/final price per size)
-- `compression.ts` — client-side canvas image compression, returns base64 directly
+- `compression.ts` — client-side Canvas image normalization/compression; always re-encodes JPEG/PNG/WebP to base64, bypasses SVG/GIF
 - `s3-storage.ts` — S3 upload/delete helpers using IDCloudHost
-- `hooks/use-image-upload.ts` — `useImageUpload(folder)` hook: compress → base64 → upload → toast. Used by admin pages.
+- `hooks/use-image-upload.ts` — `useImageUpload(folder)` hook: normalize → base64 → upload → generic error toast. Used by admin pages.
 
 ### Auth Model (`app/actions/auth.ts`)
 
@@ -101,7 +101,7 @@ All public API routes have **rate limiting** via `lib/ratelimit.ts`.
 - **InvoiceClient** (`app/invoice/[id]/InvoiceClient.tsx`) — Payment proof upload, confirmation buttons.
 - **SettingsForm** (`app/admin/settings/settings-form.tsx`) — 6-section settings including Homepage Images (8 fields).
 - **PostEditor** (`app/admin/blog/`) — Blog post CRUD with markdown.
-- **StoreProvider** (`components/providers/StoreProvider.tsx`) — Context: storeName, storeLogo, storeSlogan, supportEmail, whatsapp, telegramUsername.
+- **StoreProvider** (`components/providers/StoreProvider.tsx`) — Context: storeName, storeLogo, supportEmail, whatsapp, telegramUsername.
 - **ProtectionProvider** (`components/providers/ProtectionProvider.tsx`) — Anti-screenshot on public pages.
 
 ### Cart Flow
@@ -114,7 +114,7 @@ Server-rendered blog at `/blog` with slug-based routing (`/blog/[slug]`). Posts 
 
 ### Compare & Wishlist
 
-`features/compare/store.ts` — up to 3 products, localStorage (`parfume_compare`). `features/wishlist/store.ts` — arbitrary count, localStorage (`parfume_wishlist`). Both Zustand + persist middleware.
+`features/compare/store.ts` — up to 3 products, localStorage (`parfume_compare`), exposes `ids`, `toggle`, and `remove`. `features/wishlist/store.ts` — arbitrary count, localStorage (`parfume_wishlist`). Both Zustand + persist middleware.
 
 ### Shipping Module (`lib/shipping.ts`)
 
@@ -124,13 +124,9 @@ Server-rendered blog at `/blog` with slug-based routing (`/blog/[slug]`). Posts 
 
 `sendPaymentProofWithActions()` for bot notifications with inline approve/reject buttons. Payment proof photos forwarded to admin chat on upload. Configured via admin Settings (bot token + chat ID).
 
-### Message Generators (`features/cart/lib/message-generator.ts`)
+### Message Generators
 
-Four text/order helpers in `features/cart/lib/message-generator.ts`:
-- `generateWhatsAppOrderText()` — URL-encoded for WA deep links
-- `generateTelegramOrderText()` — Plain text for TG messages
-- `generateTransferOrderText()` — Includes bank details
-- `getTelegramUrl()` — generates `t.me/` URL with encoded text
+Order message helper module was removed after confirming zero callers. Checkout and payment confirmation flows now use their active action/component paths directly.
 
 ### Post-War Pricing (`lib/price.ts`)
 
@@ -140,7 +136,8 @@ Runtime pricing for war-converted products:
 
 ### Build & Deploy
 
-- `next.config.ts`: standalone output, 50MB body limit, `remotePatterns` for `is3.cloudhost.id` and `placehold.co`.
+- `next.config.ts`: standalone output, 50MB Server Action body limit, unoptimized images with remote patterns for `is3.cloudhost.id` and `placehold.co`.
+- Upload errors log only generic messages; raw exception details are not returned to clients or written to logs.
 - `nixpacks.toml`: Nixpacks config for Coolify — Node 22, sharp native deps, standalone output.
 - `package.json` build script: copies `.next/static` and `public` into standalone for deployment.
 

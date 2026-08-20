@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getPost } from '@/app/actions/posts'
 import { Header } from '@/components/layout/Header'
+import { getImageSrc } from '@/lib/image-proxy'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
@@ -107,7 +108,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         {post.coverImage && (
           <div className="relative aspect-[16/9] rounded-2xl overflow-hidden mb-8">
             <Image
-              src={post.coverImage}
+              src={getImageSrc(post.coverImage)}
               alt={post.title}
               fill
               sizes="(max-width: 768px) 100vw, 768px"
