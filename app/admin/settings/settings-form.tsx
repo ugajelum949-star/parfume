@@ -19,16 +19,17 @@ const inputClass = "bg-input border-border focus:border-gold focus:ring-gold/20"
 
 export function SettingsForm({ initial }: { initial: Record<string, string> }) {
   const [floatingEnabled, setFloatingEnabled] = useState(initial.floatingButtonEnabled === 'true')
-  const [logoUrl, setLogoUrl] = useState(initial.store_logo || '')
-  const [logoUploading, setLogoUploading] = useState(false)
 
   const homepageImageKeys = ['heroImage', 'heroForHim', 'heroForHer', 'heroUnisex', 'scentFresh', 'scentFloral', 'scentWoody', 'scentAmber'] as const
   const [imageUrls, setImageUrls] = useState<Record<string, string>>(
-    Object.fromEntries(homepageImageKeys.map(k => [k, initial[k] || '']))
+    Object.fromEntries([
+      ['_logo', initial.store_logo || ''],
+      ...homepageImageKeys.map(k => [k, initial[k] || '']),
+    ])
   )
   const [imageUploading, setImageUploading] = useState<Record<string, boolean>>({})
 
-  async function handleImageUpload(key: string, folder: string, e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleUpload(key: string, folder: string, e: React.ChangeEvent<HTMLInputElement>) {
     const rawFile = e.target.files?.[0]
     if (!rawFile) return
     setImageUploading(prev => ({ ...prev, [key]: true }))
@@ -49,34 +50,13 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
     }
   }
 
-  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const rawFile = e.target.files?.[0]
-    if (!rawFile) return
-    setLogoUploading(true)
-    try {
-      const base64 = await compressImage(rawFile, 0.85, 1920)
-      const result = await uploadImage(base64, 'logos')
-      if (result.success && result.url) {
-        setLogoUrl(result.url)
-        toast.success('Logo berhasil diunggah')
-      } else {
-        toast.error(result.error || 'Gagal mengunggah logo')
-      }
-    } catch (err) {
-      console.error('Upload error:', err)
-      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
-    } finally {
-      setLogoUploading(false)
-    }
-  }
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!confirm('Simpan semua perubahan settings?')) return
     const form = e.currentTarget
     const fd = new FormData(form)
     fd.set('floatingButtonEnabled', floatingEnabled ? 'true' : 'false')
-    fd.set('store_logo', logoUrl)
+    fd.set('store_logo', imageUrls['_logo'] || '')
     for (const key of homepageImageKeys) {
       fd.set(key, imageUrls[key] || '')
     }
@@ -119,9 +99,9 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
           <div className="space-y-2">
             <Label className="text-sm font-medium">Logo</Label>
             <div className="flex items-center gap-4">
-              {logoUrl ? (
+              {imageUrls['_logo'] ? (
                 <div className="w-16 h-16 rounded-xl bg-accent border border-border flex items-center justify-center overflow-hidden shrink-0">
-                  <img src={logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                  <img src={imageUrls['_logo']} alt="Logo" className="w-full h-full object-contain" />
                 </div>
               ) : (
                 <div className="w-16 h-16 rounded-xl bg-accent border border-border flex items-center justify-center shrink-0">
@@ -131,10 +111,10 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
               <div className="flex-1">
                 <Label className="cursor-pointer">
                   <span className="inline-flex items-center gap-2 bg-accent hover:bg-accent/80 px-4 py-2 rounded-lg border border-border text-sm transition-colors">
-                    {logoUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                    {logoUrl ? 'Change Logo' : 'Upload Logo'}
+                    {imageUploading['_logo'] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                    {imageUrls['_logo'] ? 'Change Logo' : 'Upload Logo'}
                   </span>
-                  <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={logoUploading} />
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload('_logo', 'logos', e)} disabled={imageUploading['_logo']} />
                 </Label>
                 <p className="text-xs text-muted-foreground mt-1">PNG, JPG, SVG. Max 5MB.</p>
               </div>
@@ -373,7 +353,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
                         {imageUploading[key] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                         {imageUrls[key] ? 'Change' : 'Upload'}
                       </span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(key, folder, e)} disabled={imageUploading[key]} />
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(key, folder, e)} disabled={imageUploading[key]} />
                     </Label>
                   </div>
                 </div>
@@ -409,7 +389,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
                         {imageUploading[key] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                         {imageUrls[key] ? 'Change' : 'Upload'}
                       </span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(key, folder, e)} disabled={imageUploading[key]} />
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(key, folder, e)} disabled={imageUploading[key]} />
                     </Label>
                   </div>
                 </div>
@@ -447,7 +427,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
                           {imageUploading[key] ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                           {imageUrls[key] ? 'Change' : 'Upload'}
                         </span>
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(key, folder, e)} disabled={imageUploading[key]} />
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(key, folder, e)} disabled={imageUploading[key]} />
                       </Label>
                     </div>
                   </div>

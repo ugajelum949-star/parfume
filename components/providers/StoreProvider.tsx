@@ -5,7 +5,6 @@ import { getSettings } from '@/app/actions/settings'
 
 interface StoreSettings {
   storeName: string
-  storeSlogan: string
   storeLogo: string
   supportEmail: string
   whatsapp: string
@@ -16,7 +15,6 @@ interface StoreSettings {
 
 const DEFAULTS: StoreSettings = {
   storeName: 'My Store',
-  storeSlogan: '',
   storeLogo: '',
   supportEmail: '',
   whatsapp: '',
@@ -35,10 +33,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<StoreSettings>(DEFAULTS)
 
   useEffect(() => {
-    getSettings(['store_name', 'store_slogan', 'store_logo', 'support_email', 'whatsapp', 'telegramUsername', 'floatingButtonEnabled', 'floatingButtonType']).then((data) => {
+    getSettings(['store_name', 'store_logo', 'support_email', 'whatsapp', 'telegramUsername', 'floatingButtonEnabled', 'floatingButtonType']).then((data) => {
       setSettings({
         storeName: data.store_name || 'My Store',
-        storeSlogan: data.store_slogan || '',
         storeLogo: data.store_logo || '',
         supportEmail: data.support_email || '',
         whatsapp: data.whatsapp || '',

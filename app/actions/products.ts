@@ -27,19 +27,6 @@ export async function getPublicProducts() {
   }
 }
 
-export async function getProductWithImages(id: string) {
-  try {
-    await verifyAdmin()
-    const [product] = await db.select().from(products).where(eq(products.id, id)).limit(1)
-    if (!product) return null
-    const images = await db.select().from(productImages).where(eq(productImages.productId, id)).orderBy(productImages.order)
-    return { ...product, images }
-  } catch (error) {
-    console.error('Error fetching product:', error)
-    return null
-  }
-}
-
 export async function createProduct(formData: FormData) {
   try {
     await verifyAdmin()
@@ -184,7 +171,6 @@ export async function updateProduct(id: string, formData: FormData) {
 
     // Diff additional images: only delete S3 files for images that are truly removed
     const oldImages = await db.select().from(productImages).where(eq(productImages.productId, id)).orderBy(productImages.order)
-    const oldUrls = new Set(oldImages.map(img => img.url))
     const newValidImages = images.filter(url => url && url.trim() !== '')
     const newUrls = new Set(newValidImages)
 

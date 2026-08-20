@@ -19,8 +19,6 @@ import { getFeaturedBrands } from '@/app/actions/featured-brands'
 
 export const dynamic = 'force-dynamic'
 
-export const revalidate = 60
-
 export default async function Home() {
   await checkExpiredWars()
 

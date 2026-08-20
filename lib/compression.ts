@@ -15,15 +15,10 @@ export async function compressImage(file: File, quality = 0.82, maxWidth = 1920)
         const img = new Image();
         img.src = event.target?.result as string;
         img.onload = () => {
-          if (img.width <= maxWidth) {
-            // No resize needed — return original base64 directly
-            resolve(event.target?.result as string);
-            return;
-          }
-
+          const targetWidth = Math.min(img.width, maxWidth)
           const canvas = document.createElement('canvas');
-          const height = Math.round((img.height * maxWidth) / img.width);
-          canvas.width = maxWidth;
+          const height = Math.round((img.height * targetWidth) / img.width);
+          canvas.width = targetWidth;
           canvas.height = height;
 
           const ctx = canvas.getContext('2d');
@@ -36,7 +31,7 @@ export async function compressImage(file: File, quality = 0.82, maxWidth = 1920)
           const isWebp = file.type === 'image/webp';
           const outputMime = isPng ? 'image/png' : isWebp ? 'image/webp' : 'image/jpeg';
 
-          ctx.drawImage(img, 0, 0, maxWidth, height);
+          ctx.drawImage(img, 0, 0, targetWidth, height);
 
           canvas.toBlob(
             (blob) => {

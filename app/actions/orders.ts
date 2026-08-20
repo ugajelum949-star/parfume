@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db'
 import { orders, orderItems, paymentMethods, products, warItems, settings } from '@/db/schema'
-import { eq, desc, sql, and, gte } from 'drizzle-orm'
+import { eq, sql, and, gte } from 'drizzle-orm'
 import { calculateOrderTotal, type ZoneId } from '@/lib/shipping'
 import { getSizePrice } from '@/lib/price'
 import { verifyAdmin } from './auth'
@@ -201,25 +201,6 @@ export async function createOrder(data: {
   } catch (error) {
     console.error('Error creating order:', error)
     return { success: false, error: 'Failed to create order.' }
-  }
-}
-
-export async function getOrders() {
-  try {
-    await verifyAdmin()
-    return await db.select().from(orders).orderBy(desc(orders.createdAt))
-  } catch (error) {
-    console.error('Error fetching orders:', error)
-    return []
-  }
-}
-
-export async function getActivePaymentMethods() {
-  try {
-    return await db.select().from(paymentMethods).where(eq(paymentMethods.isActive, true))
-  } catch (error) {
-    console.error('Error fetching payment methods:', error)
-    return []
   }
 }
 

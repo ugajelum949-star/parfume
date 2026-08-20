@@ -29,8 +29,18 @@ export function useImageUpload(folder: string) {
         toast.error(result.error || 'Gagal mengunggah foto')
       }
     } catch (err) {
-      console.error('Upload error:', err)
-      toast.error('Gagal memproses gambar: ' + (err instanceof Error ? err.message : String(err)))
+      console.error('[useImageUpload] Error type:', typeof err, 'Constructor:', err?.constructor?.name)
+      console.error('[useImageUpload] Full error:', err)
+      if (err instanceof Error) {
+        console.error('[useImageUpload] Message:', err.message)
+        console.error('[useImageUpload] Stack:', err.stack)
+        // Check for React digest (error #441 etc)
+        if ('digest' in err) {
+          console.error('[useImageUpload] Digest:', (err as any).digest)
+        }
+      }
+      const msg = err instanceof Error ? err.message : String(err)
+      toast.error('Gagal memproses gambar: ' + msg)
     } finally {
       setUploading(false)
     }

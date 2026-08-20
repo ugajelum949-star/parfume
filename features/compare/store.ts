@@ -5,15 +5,12 @@ import toast from 'react-hot-toast'
 interface CompareStore {
   ids: string[]
   toggle: (id: string) => void
-  isSelected: (id: string) => boolean
-  count: () => number
-  clear: () => void
   remove: (id: string) => void
 }
 
 export const useCompareStore = create<CompareStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       ids: [],
 
       toggle: (id) => set((state) => {
@@ -26,12 +23,6 @@ export const useCompareStore = create<CompareStore>()(
         }
         return { ids: [...state.ids, id] }
       }),
-
-      isSelected: (id) => get().ids.includes(id),
-
-      count: () => get().ids.length,
-
-      clear: () => set({ ids: [] }),
 
       remove: (id) => set((state) => ({
         ids: state.ids.filter((i) => i !== id),
